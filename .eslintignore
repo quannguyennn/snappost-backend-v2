@@ -1,0 +1,6 @@
+*.graphql
+dist
+src/graphql.interface.ts
+ecosystem.config.js
+*.proto
+*.hbs
