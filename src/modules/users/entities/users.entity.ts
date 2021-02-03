@@ -1,5 +1,5 @@
 import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ObjectType, Field, Int, HideField, ID } from '@nestjs/graphql';
+import { ObjectType, Field, HideField, ID } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 
@@ -25,7 +25,7 @@ export class User implements Node {
   id: string;
 
   @Column({ length: 50 })
-  name: string;
+  nickname: string;
 
   @Column({ length: 50, unique: true, nullable: true })
   email: string;
@@ -39,33 +39,10 @@ export class User implements Node {
   passwordSalt: string;
 
   @Column({ unique: true, nullable: true })
-  phone?: string;
-
-  @Column({ unique: true, nullable: true })
-  paycoId?: string;
-
-  @Column({ unique: true, nullable: true })
   googleId?: string;
 
   @Column({ unique: true, nullable: true })
-  kakaoId?: string;
-
-  @Column({ unique: true, nullable: true })
   naverId?: string;
-
-  @Column({
-    default: true,
-    name: 'isActive',
-  })
-  isActive: boolean;
-
-  @Column({
-    nullable: true,
-    type: 'text',
-    enum: AppRoles,
-  })
-  // @Column({ length: 50, nullable: true })
-  roles?: string;
 
   @Column({ nullable: true })
   avatar?: string;
@@ -78,8 +55,6 @@ export class User implements Node {
 
   isSocial?: boolean;
   snsId?: string;
-  // @OneToMany((type) => UserLaundry, (userLaundry) => userLaundry.user)
-  // userLaundry: UserLaundry[];
 
   constructor(partial: DeepPartial<User>) {
     Object.assign(this, { id: snowflake.nextId(), ...partial });

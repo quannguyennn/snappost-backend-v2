@@ -13,16 +13,15 @@ import { GraphQLContext } from 'src/graphql/app.graphql-context';
 import { UserRegister } from '../dto/user_register.dto';
 import { LoginSNSInput } from '../dto/login_sns_input.dto';
 import { LoginEmailInput } from '../dto/login_email.input.dto';
-import { AppRoles } from 'src/graphql/enums/roles.type';
-import { ChangePasswordInput, ChangePasswordTokenInput } from '../dto/change_password.dto';
+import { ChangePasswordInput } from '../dto/change_password.dto';
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
 
   @Mutation(() => AuthConnection)
   async login(@Args('input') input: LoginEmailInput, @Context() ctx: GraphQLContext) {
-    const { email, password } = input;
-    const data = await this.authService.login(email, password);
+    const { email } = input;
+    const data = await this.authService.login(email);
     ctx.res.cookie('token', data.accessToken, {
       expires: moment(jwtDecode<JWTDecodeValue>(data.accessToken).exp * 1000).toDate(),
       sameSite: false,
@@ -59,60 +58,10 @@ export class AuthResolver {
     return data;
   }
 
-  @Query(() => String)
-  async getPayToken(@Args('state') state: string, @Args('code') code: string): Promise<string> {
-    return await this.authService.getPaycoToken(state, code);
-  }
-
-  @Mutation(() => Boolean)
-  async forgotPassword(@Args('email') email: string): Promise<boolean> {
-    return await this.authService.sendResetPasswordMail(email);
-  }
-
-  @Mutation(() => Boolean)
-  async sendOTP(@Args('phone') phone: string): Promise<boolean> {
-    return await this.authService.sendOTPCode(phone);
-  }
-
-  @Mutation(() => Boolean)
-  async validateOTP(@Args('phone') phone: string, @Args('code') code: string): Promise<boolean> {
-    return await this.authService.validateOTPCode(phone, code);
-  }
-
-  @Mutation(() => User)
-  findEmailByPhone(
-    @Args('name') name: string,
-    @Args('phone') phone: string,
-    @Args('code') code: string,
-  ): Promise<User | undefined> {
-    return this.authService.findEmailByPhone(name, phone, code);
-  }
-
-  @Mutation(() => String)
-  requestChangePassword(
-    @Args('name') name: string,
-    @Args('phone') phone: string,
-    @Args('email') email: string,
-    @Args('code') code: string,
-  ): Promise<string | undefined> {
-    return this.authService.requestChangePassword(name, phone, code, email);
-  }
-
-  @Mutation(() => Boolean)
-  changePassword(@Args('input') input: ChangePasswordTokenInput): Promise<boolean | undefined> {
-    return this.authService.changePasswordToken(input.password, input.token);
-  }
-
   @UseGuards(GqlCookieAuthGuard)
   @Mutation(() => Boolean)
   updatePassword(@CurrentUser() user: User, @Args('input') input: ChangePasswordInput): Promise<boolean | undefined> {
     return this.authService.changePassword(user, input);
-  }
-
-  @UseGuards(GqlCookieAuthGuard)
-  @Mutation(() => User)
-  async setRole(@CurrentUser() user, @Args('role') role: AppRoles): Promise<User | undefined> {
-    return await this.authService.setRole(user.id, role);
   }
 
   @AuthCookie()

@@ -9,13 +9,8 @@ import { SNSTypeEnum } from 'src/graphql/enums/sns_type';
 @InputType()
 export class UserRegister {
   @Field()
-  @MinLength(2, {
-    message: errorName.TOO_SHORT,
-  })
-  @MaxLength(15, {
-    message: errorName.TOO_LONG,
-  })
-  name: string;
+  nickname?: string;
+
   @Field()
   @Validate(ValidEmail, {
     message: errorName.INVALID_EMAIL,
@@ -25,42 +20,12 @@ export class UserRegister {
   })
   email: string;
 
-  @Field()
-  @Validate(UniquePhone, {
-    message: errorName.PHONE_EXIST,
-  })
-  phone: string;
-
-  @ValidateIf((o) => !o.snsToken)
-  @MinLength(8, {
-    message: errorName.TOO_SHORT,
-  })
-  @MaxLength(15, {
-    message: errorName.TOO_LONG,
-  })
-  // @Validate(ValidPassword, {
-  //   message: errorName.INVALID_PASSWORD,
-  // })
-  @Field({ nullable: true })
-  password?: string;
-
-  @Field(() => AppRoles)
-  roles: AppRoles;
-
-  @Field({ nullable: true })
-  laundryCode?: string;
-
   @Field({ nullable: true })
   snsToken?: string;
 
   @Field(() => SNSTypeEnum, { nullable: true })
   snsType: SNSTypeEnum;
-  @Field({ nullable: true })
-  paycoId?: string;
+
   @Field({ nullable: true })
   googleId?: string;
-  @Field({ nullable: true })
-  kakaoId?: string;
-  @Field({ nullable: true })
-  naverId?: string;
 }

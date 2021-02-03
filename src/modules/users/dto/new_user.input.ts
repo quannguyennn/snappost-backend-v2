@@ -7,7 +7,7 @@ export class NewUserInput {
   email?: string;
 
   @Field()
-  name?: string;
+  nickname?: string;
 
   @Field()
   password?: string;
@@ -15,28 +15,9 @@ export class NewUserInput {
   @Field()
   phone?: string;
 
-  @Field(() => Int)
-  age?: number;
-
-  @Field(() => AppRoles)
-  roles?: AppRoles;
-
-  isActive?: boolean;
-
+  @Field()
   avatar?: string;
 }
 
 @InputType()
 export class UpdateUserInput extends PartialType(NewUserInput) {}
-
-@InputType()
-export class AdminUpdateUserInput extends PartialType(NewUserInput) {
-  @Field()
-  id: string;
-
-  @Field()
-  deactiveReason?: string;
-
-  @Field(() => [String])
-  deleteLaundry?: string[];
-}

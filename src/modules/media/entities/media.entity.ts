@@ -67,12 +67,6 @@ export class MediaEntity extends BaseEntity implements Node {
   @TreeParent()
   parent?: MediaEntity;
 
-  @Column({
-    type: 'bigint',
-    nullable: true,
-  })
-  laundryId?: string;
-
   constructor(data: DeepPartial<MediaEntity>) {
     super();
     Object.assign(this, { id: snowflake.nextId(), ...data });

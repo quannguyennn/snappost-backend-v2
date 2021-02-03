@@ -51,7 +51,7 @@ export class AuthModule {
       imports: [
         JwtModule.register({
           secret: options?.secret,
-          signOptions: { expiresIn: '30 days', issuer: 'klc' },
+          signOptions: { expiresIn: '30 days', issuer: 'snappost' },
         }),
       ],
     };

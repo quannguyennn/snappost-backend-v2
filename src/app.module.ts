@@ -9,6 +9,7 @@ import { MediaModule } from './modules/media/media.module';
 import { UsersModule } from './modules/users/users.module';
 import { typeORMConfig } from './typeorm.config';
 import { TemplateModule } from './modules/template/template.module';
+import { PostModule } from './modules/post/post.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -24,12 +25,13 @@ import { TemplateModule } from './modules/template/template.module';
     }),
     GraphQLModule.forRoot(gqlOptions),
     AuthModule.forRoot({
-      secret: 'KLC secret',
+      secret: 'snappost secret',
     }),
     TemplateModule.forRoot({
       dir: __dirname + '/email-templates',
     }),
     UsersModule,
+    PostModule,
   ],
   // providers: [JSONObjectScalar],
   controllers: [AppController],

@@ -103,18 +103,13 @@ export class UsersService {
     return createPaginationObject(items, total, page, limit);
   };
 
-  login = async (email: string, password: string) => {
+  login = async (email: string) => {
     const user = await getManager()
       .createQueryBuilder(User, 'user')
       .where('LOWER(user.email) = LOWER(:email)', { email })
       .getOne();
 
     if (!user) throw new Error(errorName.INVALID_EMAIL_PASSWORD);
-    const check = bcrypt.compareSync(password, user.password);
-    if (check) {
-      return user;
-    } else {
-      throw new Error(errorName.INVALID_EMAIL_PASSWORD);
-    }
+    return user;
   };
 }
