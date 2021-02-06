@@ -1,4 +1,4 @@
-import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
@@ -10,15 +10,15 @@ import { snowflake } from 'src/helpers/common';
   name: 'comment',
 })
 export class Comments implements Node {
-  @Field(() => ID)
+  @PrimaryGeneratedColumn()
   @Column('bigint', {
     primary: true,
     unsigned: true,
   })
-  id: string;
+  id: number;
 
-  @Column('bigint')
-  creatorId: string;
+  @Column()
+  creatorId: number;
 
   //   @Column('bigint', { array: true })
   //   medias?: string[];

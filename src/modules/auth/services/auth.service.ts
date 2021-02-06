@@ -324,7 +324,7 @@ export class AuthService {
   //   return `${Math.floor(Math.random() * (max - min + 1)) + min}`;
   // };
 
-  deleteToken = (token: string, userId: string): Promise<DeleteResult> => {
+  deleteToken = (token: string, userId: number): Promise<DeleteResult> => {
     return this.authRepository.delete({ accessToken: token, userId });
   };
 }

@@ -11,7 +11,7 @@ export class AuthTokenEntity {
   id: string;
 
   @Column('bigint', { name: 'userId' })
-  userId: string;
+  userId: number;
 
   @Column({ name: 'deviceId', nullable: true })
   deviceId?: string;

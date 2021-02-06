@@ -25,7 +25,7 @@ export class UsersQueryResolver {
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => User, { name: 'user', nullable: true })
-  async user(@Args('id') id: string): Promise<User | undefined> {
+  async user(@Args('id') id: number): Promise<User | undefined> {
     return await this.userDataLoader.load(id);
   }
 }

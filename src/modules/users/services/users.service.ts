@@ -24,7 +24,7 @@ export class UsersService {
     }
   };
 
-  update = async (userId: string, data: DeepPartial<User>): Promise<User | undefined> => {
+  update = async (userId: number, data: DeepPartial<User>): Promise<User | undefined> => {
     if (data.password) {
       const salt = bcrypt.genSaltSync(10);
       data.password = bcrypt.hashSync(data.password ?? '', salt);
@@ -34,7 +34,7 @@ export class UsersService {
     return this.userRepository.findOneOrFail(userId);
   };
 
-  findById = async (id: string): Promise<User | undefined> => {
+  findById = async (id: number): Promise<User | undefined> => {
     return this.userRepository.findOne({ where: { id } });
   };
 

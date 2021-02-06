@@ -1,12 +1,17 @@
 import { InterfaceType, Field, ID, ObjectType, Int } from '@nestjs/graphql';
 import { Type } from '@nestjs/common';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @InterfaceType({
   description: 'Node',
 })
 export abstract class Node {
-  @Field(() => ID)
-  id: string;
+  @PrimaryGeneratedColumn()
+  @Column('bigint', {
+    primary: true,
+    unsigned: true,
+  })
+  id: number;
 }
 
 @InterfaceType()

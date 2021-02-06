@@ -1,5 +1,5 @@
-import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ObjectType, Field, HideField, ID } from '@nestjs/graphql';
+import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field, HideField } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 
@@ -17,12 +17,12 @@ export enum AppRoles {
   name: 'users',
 })
 export class User implements Node {
-  @Field(() => ID)
+  @PrimaryGeneratedColumn()
   @Column('bigint', {
     primary: true,
     unsigned: true,
   })
-  id: string;
+  id: number;
 
   @Column({ length: 50 })
   nickname: string;
@@ -45,7 +45,7 @@ export class User implements Node {
   naverId?: string;
 
   @Column({ nullable: true })
-  avatar?: string;
+  avatar?: number;
 
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;

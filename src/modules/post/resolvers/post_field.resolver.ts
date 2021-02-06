@@ -11,7 +11,7 @@ export class PostFieldResolver {
   constructor(private readonly postService: PostService, private readonly commentService: CommentService) {}
 
   @UseGuards(GqlCookieAuthGuard)
-  @ResolveField(() => Comments, { nullable: true })
+  @ResolveField(() => [Comments], { nullable: true })
   async postComments(@Parent() post: Post): Promise<Comments[] | undefined> {
     const comments = this.commentService.findPostComments(post.id);
     return comments;

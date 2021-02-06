@@ -10,7 +10,7 @@ export class PostService {
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
   };
-  create = async (creatorId: string, input: CreatePostInput): Promise<Post> => {
+  create = async (creatorId: number, input: CreatePostInput): Promise<Post> => {
     const newPost = this.postRepository.create({ creatorId, ...input });
     return await this.postRepository.save(newPost);
   };

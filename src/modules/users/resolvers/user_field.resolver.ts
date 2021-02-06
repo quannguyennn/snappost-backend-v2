@@ -12,7 +12,7 @@ export class UserFieldResolver {
   @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => String, { nullable: true })
   async avatarFilePath(@Parent() user: User): Promise<string | undefined> {
-    const image = await this.mediaService.findById(user.avatar || '');
+    const image = await this.mediaService.findById(Number(user.avatar));
     return image?.filePath;
   }
 

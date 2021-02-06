@@ -33,7 +33,7 @@ export class MediaService {
     return medias;
   };
 
-  findById = async (id: string): Promise<MediaEntity | undefined> => {
+  findById = async (id: number): Promise<MediaEntity | undefined> => {
     if (!id) return undefined;
     return await this.mediaRepository.findOneOrFail({ id });
   };

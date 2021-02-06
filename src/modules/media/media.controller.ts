@@ -27,7 +27,7 @@ export class MediaController {
       },
     }),
   )
-  async uploadFile(@UploadedFile() file: MulterFile, @CurrentUserRest('id') id: string) {
+  async uploadFile(@UploadedFile() file: MulterFile, @CurrentUserRest('id') id: number) {
     const ext = path.extname(file.originalname.toLowerCase());
     const fileName = new Date().getTime() + ext;
     const response = await uploadMediaBase64(file, fileName);

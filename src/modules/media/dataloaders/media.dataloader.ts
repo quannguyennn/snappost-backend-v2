@@ -6,9 +6,9 @@ import { MediaRepository } from '../repositories/media.repository';
 @Injectable({
   scope: Scope.DEFAULT,
 })
-export class MediaDataLoader extends DataLoader<string, MediaEntity> {
+export class MediaDataLoader extends DataLoader<number, MediaEntity> {
   constructor(private readonly mediaRepository: MediaRepository) {
-    super(async (ids: ReadonlyArray<string>) => {
+    super(async (ids: ReadonlyArray<number>) => {
       const rows = await this.mediaRepository.findByIds([...ids]);
       return ids.map((id) => rows.find((x) => x.id == id) ?? new Error('Not found'));
     });

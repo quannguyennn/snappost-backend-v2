@@ -30,7 +30,7 @@ export class MediaQueriesResolver {
     nullable: true,
     name: 'media',
   })
-  async media(@Args('id') id: string) {
+  async media(@Args('id') id: number) {
     return this.mediaService.findById(id);
   }
 }

@@ -16,7 +16,7 @@ export class NewUserInput {
   phone?: string;
 
   @Field()
-  avatar?: string;
+  avatar?: number;
 }
 
 @InputType()

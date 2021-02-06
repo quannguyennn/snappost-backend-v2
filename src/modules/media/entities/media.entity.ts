@@ -1,4 +1,13 @@
-import { Column, Entity, Tree, TreeChildren, TreeParent, BaseEntity, DeepPartial } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Tree,
+  TreeChildren,
+  TreeParent,
+  BaseEntity,
+  DeepPartial,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ObjectType, Field, Int, HideField, ID } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
@@ -13,13 +22,12 @@ import { snowflake } from 'src/helpers/common';
 })
 @Tree('closure-table')
 export class MediaEntity extends BaseEntity implements Node {
-  @Field(() => ID)
-  // @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   @Column('bigint', {
     primary: true,
     unsigned: true,
   })
-  id: string;
+  id: number;
 
   @Column({ length: 500 })
   name: string;
@@ -39,12 +47,8 @@ export class MediaEntity extends BaseEntity implements Node {
   })
   isDeleted: boolean;
 
-  @Column({
-    type: 'bigint',
-    nullable: true,
-    unsigned: true,
-  })
-  ownerId?: string;
+  @Column({ nullable: true })
+  ownerId?: number;
 
   @Column({
     type: 'enum',

@@ -5,7 +5,7 @@ export class CreateCommentInput {
   @Field()
   content: string;
 
-  @Field()
+  @Field({ defaultValue: 0 })
   parentId?: string;
 
   @Field()
@@ -15,7 +15,7 @@ export class CreateCommentInput {
 @InputType()
 export class UpdateCommentInput extends CreateCommentInput {
   @Field()
-  id: string;
+  id: number;
 }
 
 @InputType()

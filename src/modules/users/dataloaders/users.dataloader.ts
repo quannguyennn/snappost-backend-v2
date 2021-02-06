@@ -6,9 +6,9 @@ import { User } from '../entities/users.entity';
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class UserDataLoader extends DataLoader<string, User> {
+export class UserDataLoader extends DataLoader<number, User> {
   constructor(private readonly userRepository: UserRepository) {
-    super(async (ids: ReadonlyArray<string>) => {
+    super(async (ids: ReadonlyArray<number>) => {
       const rows = await this.userRepository.findByIds([...ids]);
       return ids.map((id) => rows.find((x) => x.id == id) || new Error('Not found'));
     });

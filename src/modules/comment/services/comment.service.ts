@@ -7,7 +7,7 @@ import { CommentRepository } from '../repositories/comment.repository';
 export class CommentService {
   constructor(private readonly commentRepository: CommentRepository) {}
 
-  create = async (creatorId: string, input: CreateCommentInput): Promise<Comments> => {
+  create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
     const newComment = this.commentRepository.create({ creatorId, ...input });
     return await this.commentRepository.save(newComment);
   };
@@ -22,7 +22,7 @@ export class CommentService {
     return true;
   };
 
-  findPostComments = async (id: string): Promise<Comments[]> => {
+  findPostComments = async (id: number): Promise<Comments[]> => {
     return this.commentRepository.find({ where: { postId: id } });
   };
 }

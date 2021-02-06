@@ -1,5 +1,13 @@
-import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn, BaseEntity } from 'typeorm';
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import {
+  Entity,
+  Column,
+  DeepPartial,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BaseEntity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ObjectType } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 
@@ -10,15 +18,15 @@ import { snowflake } from 'src/helpers/common';
   name: 'posts',
 })
 export class Post extends BaseEntity implements Node {
-  @Field(() => ID)
+  @PrimaryGeneratedColumn()
   @Column('bigint', {
     primary: true,
     unsigned: true,
   })
-  id: string;
+  id: number;
 
   @Column('bigint')
-  creatorId: string;
+  creatorId: number;
 
   @Column('bigint', { array: true })
   medias?: string[];
