@@ -6,7 +6,7 @@ export class CreateCommentInput {
   content: string;
 
   @Field({ defaultValue: 0 })
-  parentId?: string;
+  parentId?: number;
 
   @Field()
   postId: string;

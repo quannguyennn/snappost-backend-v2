@@ -29,7 +29,7 @@ export class Post extends BaseEntity implements Node {
   creatorId: number;
 
   @Column('bigint', { array: true })
-  medias?: string[];
+  medias?: number[];
 
   @Column()
   caption: string;

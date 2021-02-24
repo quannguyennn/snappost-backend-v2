@@ -17,7 +17,7 @@ export class CommentService {
     return this.commentRepository.findOneOrFail(input.id);
   };
 
-  remove = async (id: string): Promise<boolean> => {
+  remove = async (id: number): Promise<boolean> => {
     await this.commentRepository.delete(id);
     return true;
   };

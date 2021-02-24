@@ -1,5 +1,5 @@
 import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 
@@ -26,7 +26,7 @@ export class Comments implements Node {
   postId: string;
 
   @Column()
-  parentId: string;
+  parentId: number;
 
   @Column()
   content: string;

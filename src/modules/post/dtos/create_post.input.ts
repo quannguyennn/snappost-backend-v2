@@ -2,8 +2,8 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class CreatePostInput {
-  @Field(() => [String], { nullable: true, defaultValue: [] })
-  medias?: string[];
+  @Field(() => [Number], { nullable: true, defaultValue: [] })
+  medias?: number[];
 
   @Field()
   caption: string;

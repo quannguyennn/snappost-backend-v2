@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
 import { typeORMConfig } from './typeorm.config';
 import { TemplateModule } from './modules/template/template.module';
 import { PostModule } from './modules/post/post.module';
+import { FollowModule } from './modules/follow/follow.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -32,6 +33,7 @@ import { PostModule } from './modules/post/post.module';
     }),
     UsersModule,
     PostModule,
+    FollowModule,
   ],
   // providers: [JSONObjectScalar],
   controllers: [AppController],

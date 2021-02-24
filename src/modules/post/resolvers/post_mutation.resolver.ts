@@ -29,7 +29,7 @@ export class PostMutationResolver {
   }
 
   @Mutation(() => Boolean)
-  async removePost(@Args('id', { type: () => ID }) id: string): Promise<boolean> {
+  async removePost(@Args('id', { type: () => ID }) id: number): Promise<boolean> {
     return await this.postService.remove(id);
   }
 }
