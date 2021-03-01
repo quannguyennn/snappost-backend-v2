@@ -15,7 +15,7 @@ export class PostQueryResolver {
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => Post, { name: 'posts', nullable: true })
-  async post(@CurrentUser() user: User, @Args() args: PostArgs): Promise<Pagination<Post>> {
+  async post(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
     return await this.postService.getListPost(user.id, args.page, args.limit);
   }
 }
