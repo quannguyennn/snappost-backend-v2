@@ -34,11 +34,12 @@ export class PostService {
     const listUserFollow = await this.followService.getListUserFollow(userId);
     const [data, total] = await this.postRepository.findAndCount({
       where: {
-        creatorId: In(
-          listUserFollow.map((user) => {
+        creatorId: In([
+          ...listUserFollow.map((user) => {
             return user.followUser;
           }),
-        ),
+          userId,
+        ]),
       },
       skip: limit * (page - 1),
       take: limit,

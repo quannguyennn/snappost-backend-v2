@@ -1,5 +1,4 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { FollowStatus } from '../entities/follow.entity';
 
 @InputType()
 export class FollowUserInput {

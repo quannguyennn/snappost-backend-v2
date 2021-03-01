@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommentModule } from '../comment/comment.module';
 import { FollowModule } from '../follow/follow.module';
+import { UsersModule } from '../users/users.module';
 import { PostDataloader } from './dataloaders/post.dataloaders';
 import { Post } from './entities/post.entity';
 import { PostRepository } from './repositories/post.repository';
@@ -15,6 +16,7 @@ import { PostService } from './services/post.service';
     TypeOrmModule.forFeature([Post, PostRepository]),
     forwardRef(() => CommentModule),
     forwardRef(() => FollowModule),
+    forwardRef(() => UsersModule),
   ],
   providers: [PostMutationResolver, PostService, PostQueryResolver, PostDataloader, PostFieldResolver],
   exports: [PostService, PostDataloader],
