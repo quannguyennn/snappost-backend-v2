@@ -13,10 +13,8 @@ export class PostQueryResolver {
   constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) {}
 
   @UseGuards(GqlCookieAuthGuard)
-  @Query(() => Post, { name: 'posts', nullable: true })
+  @Query(() => PostConnection, { name: 'posts', nullable: true })
   async post(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
-    const result = await this.postService.getListPost(user.id, args.page, args.limit);
-    console.log('result', result);
-    return result;
+    return await this.postService.getListPost(user.id, args.page, args.limit);
   }
 }
