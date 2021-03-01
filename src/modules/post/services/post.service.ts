@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { createPaginationObject } from 'src/modules/common/common.repository';
-import { Pagination } from 'src/modules/common/pagination';
 import { FollowService } from 'src/modules/follow/services/follow.service';
 import { In } from 'typeorm';
 import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
-import { Post } from '../entities/post.entity';
+import { Post, PostConnection } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class PostService {
     return true;
   };
 
-  getListPost = async (userId: number, page?: number, limit?: number): Promise<Pagination<Post>> => {
+  getListPost = async (userId: number, page?: number, limit?: number): Promise<PostConnection> => {
     page = page || 1;
     limit = limit || 15;
     const listUserFollow = await this.followService.getListUserFollow(userId);
