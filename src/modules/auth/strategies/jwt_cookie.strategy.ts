@@ -28,7 +28,7 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'cookie') {
       throw new UnauthorizedException();
     }
     try {
-      return await this.userService.findByEmail(payload.email || '');
+      return await this.userService.findById(payload.id);
     } catch (err) {
       throw new UnauthorizedException();
     }

@@ -16,9 +16,4 @@ export class UserFieldResolver {
     return image?.filePath;
   }
 
-  @UseGuards(GqlCookieAuthGuard)
-  @ResolveField(() => String, { nullable: true })
-  test(@Parent() user: User): string | undefined {
-    return 's';
-  }
 }

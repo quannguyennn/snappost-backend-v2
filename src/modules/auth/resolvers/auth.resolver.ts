@@ -18,22 +18,6 @@ import { ChangePasswordInput } from '../dto/change_password.dto';
 export class AuthResolver {
   constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
 
-  @Mutation(() => AuthConnection)
-  async login(@Args('input') input: LoginEmailInput, @Context() ctx: GraphQLContext) {
-    const { email } = input;
-    const data = await this.authService.login(email);
-    ctx.res.cookie('token', data.accessToken, {
-      expires: moment(jwtDecode<JWTDecodeValue>(data.accessToken).exp * 1000).toDate(),
-      sameSite: false,
-      httpOnly: true,
-    });
-    ctx.res.cookie('refreshToken', data.refreshToken, {
-      expires: moment(jwtDecode<JWTDecodeValue>(data.refreshToken).exp * 1000).toDate(),
-      sameSite: false,
-      httpOnly: true,
-    });
-    return data;
-  }
 
   @Mutation(() => User)
   async register(@Args('user') user: UserRegister): Promise<User> {
@@ -56,12 +40,6 @@ export class AuthResolver {
       });
     }
     return data;
-  }
-
-  @UseGuards(GqlCookieAuthGuard)
-  @Mutation(() => Boolean)
-  updatePassword(@CurrentUser() user: User, @Args('input') input: ChangePasswordInput): Promise<boolean | undefined> {
-    return this.authService.changePassword(user, input);
   }
 
   @AuthCookie()

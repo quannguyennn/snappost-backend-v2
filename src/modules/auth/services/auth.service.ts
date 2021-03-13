@@ -13,27 +13,11 @@ import { DeepPartial, DeleteResult, FindConditions } from 'typeorm';
 import { snowflake } from 'src/helpers/common';
 import { UserRegister } from '../dto/user_register.dto';
 import { LoginSNSInput } from '../dto/login_sns_input.dto';
-import { SNSTypeEnum } from 'src/graphql/enums/sns_type';
 import axios from 'axios';
 import { errorName } from 'src/errors';
-import { HandlebarsAdapter } from 'src/modules/template/adapters/handlebars';
-import { createEmailParam, sendEmail } from 'src/helpers/ses';
-import { AppRoles } from 'src/graphql/enums/roles.type';
-import { OtpRepository } from '../repositories/otp.repository';
-import { getConnection } from 'typeorm';
-import { Otp } from '../entities/opt.entity';
-import { sendSMS } from 'src/helpers/sendSMS';
-import bcrypt from 'bcryptjs';
-import {
-  GOOGLE_DOMAIN,
-  KAKAO_DOMAIN,
-  NAVER_DOMAIN,
-  PAYCO_DOMAIN,
-  PAYCO_CLIENT_ID,
-  PAYCO_TOKEN_DOMAIN,
-  PAYCO_SECRET_KEY,
-} from '../auth.constants';
-import { ChangePasswordInput } from '../dto/change_password.dto';
+import slugify from "slugify";
+import { MediaService } from 'src/modules/media/services/media.service';
+
 type JwtGenerateOption = {
   audience?: string | string[];
   issuer?: string;
@@ -46,9 +30,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly authRepository: AuthRepository,
-    private readonly handlebarsAdapter: HandlebarsAdapter,
-    private readonly optRepository: OtpRepository,
-  ) {}
+    private readonly mediaService: MediaService
+  ) { }
 
   findOne = async (conditions?: FindConditions<AuthTokenEntity>) => {
     return await this.authRepository.findOne(conditions);
@@ -61,29 +44,6 @@ export class AuthService {
       return result;
     } else {
       throw new Error(errorName.USER_NOT_EXIST);
-    }
-  };
-
-  login = async (email: string) => {
-    const user = await this.validateUser(email);
-    if (!user) {
-      throw new Error(errorName.USER_NOT_EXIST);
-    }
-    try {
-      const authToken = await this.saveAuthToken(user, {
-        issuer: 'snappost',
-        audience: ['app'],
-      });
-      if (!authToken) {
-        throw new ApolloError('Error');
-      }
-      return {
-        user,
-        accessToken: authToken?.accessToken,
-        refreshToken: authToken?.refreshToken,
-      };
-    } catch (err) {
-      throw new ApolloError('Error');
     }
   };
 
@@ -112,7 +72,7 @@ export class AuthService {
     };
   };
 
-  saveAuthToken = async (userInfo: Pick<User, 'id' | 'nickname' | 'email'>, options?: JwtGenerateOption) => {
+  saveAuthToken = async (userInfo: Pick<User, 'id' | 'name'>, options?: JwtGenerateOption) => {
     const { accessToken, refreshToken } = this.initAccessToken({
       payload: userInfo,
       options,
@@ -155,7 +115,7 @@ export class AuthService {
         audience: decodedRefreshToken.aud,
       });
       const newToken = await this.updateToken(token);
-      const user = this.usersService.findByEmail(currentPayload?.email || '');
+      const user = this.usersService.findById(currentPayload.id);
       if (newToken) {
         return {
           user,
@@ -177,79 +137,58 @@ export class AuthService {
   };
 
   register = async (userRegister: UserRegister): Promise<User> => {
-    if (userRegister.snsToken) {
-      const uSocial = await this.getUserSNSToken(userRegister.snsToken, userRegister.snsType);
-      if (userRegister.snsType === SNSTypeEnum.GOOGLE) {
-        userRegister.googleId = uSocial?.id;
-      }
-    }
-    const user = await this.usersService.create(userRegister);
+    const uSocial = await this.getUserSNSToken(userRegister.zaloCode);
+
+    console.log(uSocial)
+
+    const user = await this.usersService.create(uSocial);
 
     return user;
   };
 
-  getUserSNSToken = async (snsToken: string, snsType: SNSTypeEnum) => {
+  getUserSNSToken = async (zaloCode: string) => {
     try {
-      let response;
-      if (snsType === SNSTypeEnum.GOOGLE) {
-        response = await axios.get(GOOGLE_DOMAIN, {
-          params: {
-            access_token: snsToken,
-          },
-        });
+      const resToken = await axios(`https://oauth.zaloapp.com/v3/access_token?app_id=3939276768564689931&app_secret=KIzJ3MGOXJCF8XI8N6s6&code=${zaloCode}`)
+
+      if (resToken.status === 200) {
+        const resUserInfo = await axios(`https://graph.zalo.me/v2.0/me?access_token=${resToken.data.access_token}&fields=id,birthday,name,gender,picture`)
+        return resUserInfo.data
       }
 
-      if (response.status === 200) {
-        if (snsType === SNSTypeEnum.GOOGLE) {
-          return {
-            name: response?.data?.name,
-            email: response?.data?.email,
-            id: response?.data?.sub,
-            isActive: false,
-            isSocial: true,
-          };
-        }
-      } else {
-        throw new Error(errorName.INVALID_SNS_TOKEN);
-      }
     } catch (error) {
       throw new Error(errorName.INVALID_SNS_TOKEN);
     }
   };
-  getPaycoToken = async (state?: string, code?: string): Promise<string> => {
-    let response;
-    try {
-      response = await axios.get(PAYCO_TOKEN_DOMAIN, {
-        params: {
-          grant_type: 'authorization_code',
-          client_id: PAYCO_CLIENT_ID,
-          client_secret: PAYCO_SECRET_KEY,
-          state: state,
-          code: code,
-        },
-      });
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      if (response.data?.access_token) return response.data?.access_token;
-      throw new Error(errorName.INVALID_SNS_TOKEN);
-    } catch (e) {
-      throw new Error(errorName.INVALID_SNS_TOKEN);
-    }
-  };
+
   loginWithSNS = async (input: LoginSNSInput) => {
-    const uSocial = await this.getUserSNSToken(input.snsToken, input.snsType);
-    let con;
-    if (input.snsType === SNSTypeEnum.GOOGLE) {
-      con = { googleId: uSocial?.id };
-    }
-    const user = await this.usersService.findWhere({
-      where: con,
+    const uSocial = await this.getUserSNSToken(input.zaloCode);
+
+    let user = await this.usersService.findWhere({
+      where: {
+        zaloId: uSocial?.id
+      },
     });
+
     if (!user) {
-      return {
-        user: new User({ ...uSocial, createdAt: new Date(), updatedAt: new Date() }),
-      };
+      let nickname = slugify(uSocial.name, {
+        replacement: "_",
+        locale: "vi"
+      })
+
+      const existAccount = await this.usersService.countByNickname(nickname)
+      if (existAccount) {
+        nickname += `_${existAccount + 1}`
+      }
+
+      const { id: zaloId, picture: { data: { url } }, ...rest } = uSocial;
+
+      const avatar = await this.mediaService.addMedia({ filePath: url, name: nickname })
+
+      user = await this.usersService.create({ ...rest, nickname, avatar: avatar.id, zaloId })
     }
-    const { password, passwordSalt, ...result } = user;
+
+
+    const { ...result } = user;
     try {
       const authToken = await this.saveAuthToken(result, {
         issuer: 'snappost',
@@ -267,62 +206,6 @@ export class AuthService {
       throw new ApolloError('Error');
     }
   };
-
-  // sendOTPCode = async (phone: string): Promise<boolean> => {
-  //   const oldOtp = await this.optRepository.find({ phone: phone });
-  //   if (oldOtp) {
-  //     await this.optRepository.remove(oldOtp);
-  //   }
-  //   const code = this.randomInteger(1000, 9999).toString();
-  //   const sent = await sendSMS(`본인인증 번호는 ${code} 입니다. 정확히 입력해주세요.`, phone);
-  //   if (sent) {
-  //     const otp = this.optRepository.create({ phone: phone, code: code });
-  //     await this.optRepository.save(otp);
-  //     return true;
-  //   }
-  //   return false;
-  // };
-
-  // validateOTPCode = async (phone: string, code: string): Promise<boolean> => {
-  //   await getConnection()
-  //     .createQueryBuilder()
-  //     .delete()
-  //     .from(Otp)
-  //     .where('createdAt <= :time', { time: new Date(new Date().getTime() - 600000) })
-  //     .execute();
-
-  //   const otp = await this.optRepository.findOne({
-  //     where: {
-  //       phone,
-  //       code,
-  //     },
-  //   });
-  //   if (otp) {
-  //     // await this.optRepository.delete(otp.id);
-  //     // await this.optRepository.update(otp.id, { isValid: true });
-  //     return true;
-  //   }
-  //   throw new Error(errorName.INVALID_OTP);
-  // };
-
-  // removeOtp = (code: string) => {
-  //   return this.optRepository.delete({ code });
-  // };
-
-  changePassword = async (user: User, input: ChangePasswordInput): Promise<boolean | undefined> => {
-    const check = bcrypt.compareSync(input.old_password, user.password);
-    if (check) {
-      await this.usersService.update(user.id, { password: input.new_password });
-      return true;
-    } else {
-      throw new Error(errorName.INVALID_OLD_PASSWORD);
-    }
-  };
-
-  // randomInteger = (min, max): string => {
-  //   // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-  //   return `${Math.floor(Math.random() * (max - min + 1)) + min}`;
-  // };
 
   deleteToken = (token: string, userId: number): Promise<DeleteResult> => {
     return this.authRepository.delete({ accessToken: token, userId });

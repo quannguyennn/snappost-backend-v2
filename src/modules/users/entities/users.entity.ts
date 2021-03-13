@@ -24,25 +24,14 @@ export class User implements Node {
   })
   id: number;
 
+  @Column()
+  name: string;
+
   @Column({ length: 50 })
   nickname: string;
 
-  @Column({ length: 50, unique: true, nullable: true })
-  email: string;
-
-  @HideField()
-  @Column({ type: 'text' })
-  password: string;
-
-  @HideField()
-  @Column({ name: 'passwordSalt' })
-  passwordSalt: string;
-
   @Column({ unique: true, nullable: true })
-  googleId?: string;
-
-  @Column({ unique: true, nullable: true })
-  naverId?: string;
+  zaloId: string;
 
   @Column({ nullable: true })
   avatar?: number;
@@ -52,9 +41,6 @@ export class User implements Node {
 
   @UpdateDateColumn({ name: 'updatedAt', nullable: true })
   updatedAt: Date;
-
-  isSocial?: boolean;
-  snsId?: string;
 
   constructor(partial: DeepPartial<User>) {
     Object.assign(this, { id: snowflake.nextId(), ...partial });

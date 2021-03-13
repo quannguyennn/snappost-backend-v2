@@ -1,9 +1,1 @@
 export const AUTH_MODULE_OPTIONS = 'AUTH_MODULE_OPTIONS';
-export const GOOGLE_DOMAIN = 'https://www.googleapis.com/oauth2/v3/userinfo';
-export const KAKAO_DOMAIN =
-  'https://kapi.kakao.com/v2/user/me?property_keys=%5B%22kakao_account.email%22%2C+%22kakao_account.gender%22%2C+%22kakao_account.profile%22%5';
-export const NAVER_DOMAIN = 'https://openapi.naver.com/v1/nid/me';
-export const PAYCO_DOMAIN = 'https://apis-payco.krp.toastoven.net/payco/friends/find_member_v2.json';
-export const PAYCO_CLIENT_ID = '3RDZqiVwLDfREpxplTWQ';
-export const PAYCO_SECRET_KEY = '4Ym3S_9cYl19ustio0bdS2cu';
-export const PAYCO_TOKEN_DOMAIN = 'https://id.payco.com/oauth2.0/token';

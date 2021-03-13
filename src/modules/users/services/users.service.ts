@@ -14,9 +14,6 @@ export class UsersService {
 
   create = (data: DeepPartial<User>) => {
     try {
-      const salt = bcrypt.genSaltSync(10);
-      data.password = bcrypt.hashSync(data.password ?? '', salt);
-      data.passwordSalt = salt;
       const user = this.userRepository.create(data);
       return this.userRepository.save(user);
     } catch (error) {
@@ -25,11 +22,6 @@ export class UsersService {
   };
 
   update = async (userId: number, data: DeepPartial<User>): Promise<User | undefined> => {
-    if (data.password) {
-      const salt = bcrypt.genSaltSync(10);
-      data.password = bcrypt.hashSync(data.password ?? '', salt);
-      data.passwordSalt = salt;
-    }
     await this.userRepository.update(userId, data);
     return this.userRepository.findOneOrFail(userId);
   };
@@ -38,8 +30,8 @@ export class UsersService {
     return this.userRepository.findOne({ where: { id } });
   };
 
-  findByEmail = (email: string): Promise<User | undefined> => {
-    return this.userRepository.findOne({ where: { email } });
+  countByNickname = (nickname: string): Promise<number> => {
+    return this.userRepository.createQueryBuilder("user").where("user.nickname LIKE :nickname", {nickname: `${nickname}%`}).getCount()
   };
   findByPhone = (phone: string): Promise<User | undefined> => {
     return this.userRepository.findOne({ where: { phone } });

@@ -3,7 +3,6 @@ import { AuthTokenEntity } from './modules/auth/entities/auth.entity';
 import { MediaEntity } from './modules/media/entities/media.entity';
 import { User } from './modules/users/entities/users.entity';
 import { Sample } from './sample/entities/sample.entity';
-import { Otp } from './modules/auth/entities/opt.entity';
 import { Post } from './modules/post/entities/post.entity';
 import { Comments } from './modules/comment/entities/comment.entity';
 import { Follow } from './modules/follow/entities/follow.entity';
@@ -16,5 +15,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DATABASE_NAME,
   synchronize: process.env.DATABASE_SYNC === 'true',
   logging: process.env.DATABASE_LOGGING === 'true',
-  entities: [User, MediaEntity, AuthTokenEntity, Sample, Otp, Post, Comments, Follow],
+  entities: [User, MediaEntity, AuthTokenEntity, Sample, Post, Comments, Follow],
 };

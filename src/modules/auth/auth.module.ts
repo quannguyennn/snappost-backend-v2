@@ -10,15 +10,14 @@ import { JwtCookieStrategy } from './strategies/jwt_cookie.strategy';
 import { AuthModuleOptions } from './auth.interface';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthRepository } from './repositories/auth.repository';
-import { UniqueEmail, ValidEmail } from './validators/valid_email';
-import { OtpRepository } from './repositories/otp.repository';
-import { UniquePhone } from './validators/valid_phone';
+import { MediaModule } from '../media/media.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    TypeOrmModule.forFeature([AuthRepository, OtpRepository]),
+    TypeOrmModule.forFeature([AuthRepository]),
+    MediaModule
   ],
   providers: [
     //
@@ -27,9 +26,6 @@ import { UniquePhone } from './validators/valid_phone';
     // LocalStrategy,
     JwtStrategy,
     JwtCookieStrategy,
-    UniqueEmail,
-    ValidEmail,
-    UniquePhone,
     //
     AuthResolver,
   ],

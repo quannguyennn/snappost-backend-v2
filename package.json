@@ -94,6 +94,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "6.5.5",
     "sharp": "^0.25.4",
+    "slugify": "^1.4.7",
     "snowyflake": "1.0.2",
     "sonic-channel": "1.2.6",
     "sonyflake": "1.0.1",
