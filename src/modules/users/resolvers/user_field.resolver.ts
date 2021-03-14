@@ -7,9 +7,8 @@ import { UsersService } from '../services/users.service';
 
 @Resolver(() => User)
 export class UserFieldResolver {
-  constructor(private readonly userService: UsersService, private readonly mediaService: MediaService) {}
+  constructor(private readonly userService: UsersService, private readonly mediaService: MediaService) { }
 
-  @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => String, { nullable: true })
   async avatarFilePath(@Parent() user: User): Promise<string | undefined> {
     const image = await this.mediaService.findById(Number(user.avatar));

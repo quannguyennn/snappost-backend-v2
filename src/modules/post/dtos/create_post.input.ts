@@ -3,10 +3,13 @@ import { Field, InputType } from '@nestjs/graphql';
 @InputType()
 export class CreatePostInput {
   @Field(() => [Number], { nullable: true, defaultValue: [] })
-  medias?: number[];
+  medias: number[];
 
-  @Field()
-  caption: string;
+  @Field({ defaultValue: "" })
+  caption?: string;
+
+  @Field({ defaultValue: "" })
+  rawCaption?: string;
 }
 
 @InputType()

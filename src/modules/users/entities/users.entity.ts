@@ -30,11 +30,17 @@ export class User implements Node {
   @Column({ length: 50 })
   nickname: string;
 
+  @Column({ nullable: true, default: "" })
+  intro: string;
+
   @Column({ unique: true, nullable: true })
   zaloId: string;
 
   @Column({ nullable: true })
   avatar?: number;
+
+  @Column({ default: true })
+  isNew: boolean;
 
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
@@ -48,7 +54,7 @@ export class User implements Node {
 }
 
 @ObjectType()
-export class UserConnection extends PaginationBase(User) {}
+export class UserConnection extends PaginationBase(User) { }
 
 @ObjectType()
 export class FrequentUser extends User {

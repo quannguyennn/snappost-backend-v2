@@ -1,12 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
+import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 
 @InputType()
 export class FollowUserInput {
   @Field()
   followUser: number;
 
-  @Field(() => String)
-  status: string;
+  @Field(() => FollowStatus)
+  status: FollowStatus;
 }
 
 export class UnFollowUserInput {

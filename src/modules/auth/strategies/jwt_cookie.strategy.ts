@@ -25,12 +25,12 @@ export class JwtCookieStrategy extends PassportStrategy(Strategy, 'cookie') {
   validate = async (req: Request, payload: JWTDecodeValue) => {
     const accessToken = req?.cookies?.token as string | undefined;
     if (!accessToken) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("un auth");
     }
     try {
       return await this.userService.findById(payload.id);
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("un auth");
     }
   };
 }

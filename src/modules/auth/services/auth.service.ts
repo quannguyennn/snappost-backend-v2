@@ -11,12 +11,10 @@ import jwtDecode from 'jwt-decode';
 import { AuthTokenEntity } from '../entities/auth.entity';
 import { DeepPartial, DeleteResult, FindConditions } from 'typeorm';
 import { snowflake } from 'src/helpers/common';
-import { UserRegister } from '../dto/user_register.dto';
-import { LoginSNSInput } from '../dto/login_sns_input.dto';
-import axios from 'axios';
 import { errorName } from 'src/errors';
 import slugify from "slugify";
 import { MediaService } from 'src/modules/media/services/media.service';
+import { NewUserInput } from 'src/modules/users/dto/new_user.input';
 
 type JwtGenerateOption = {
   audience?: string | string[];
@@ -35,16 +33,6 @@ export class AuthService {
 
   findOne = async (conditions?: FindConditions<AuthTokenEntity>) => {
     return await this.authRepository.findOne(conditions);
-  };
-
-  validateUser = async (email: string): Promise<Omit<User, 'password' | 'passwordSalt'> | undefined> => {
-    const user = await this.usersService.login(email);
-    if (user) {
-      const { ...result } = user;
-      return result;
-    } else {
-      throw new Error(errorName.USER_NOT_EXIST);
-    }
   };
 
   initAccessToken = (data: { payload: Payload; options?: JwtGenerateOption }) => {
@@ -136,41 +124,43 @@ export class AuthService {
     }
   };
 
-  register = async (userRegister: UserRegister): Promise<User> => {
-    const uSocial = await this.getUserSNSToken(userRegister.zaloCode);
+  // register = async (userRegister: UserRegister): Promise<User> => {
+  //   const uSocial = await this.getUserSNSToken(userRegister.zaloCode);
 
-    console.log(uSocial)
+  //   console.log(uSocial)
 
-    const user = await this.usersService.create(uSocial);
+  //   const user = await this.usersService.create(uSocial);
 
-    return user;
-  };
+  //   return user;
+  // };
 
-  getUserSNSToken = async (zaloCode: string) => {
-    try {
-      const resToken = await axios(`https://oauth.zaloapp.com/v3/access_token?app_id=3939276768564689931&app_secret=KIzJ3MGOXJCF8XI8N6s6&code=${zaloCode}`)
+  // getUserSNSToken = async (zaloCode: string) => {
+  //   const getToken = await fetch(`https://oauth.zaloapp.com/v3/access_token?app_id=3939276768564689931&app_secret=KIzJ3MGOXJCF8XI8N6s6&code=${zaloCode}`)
+  //   const resToken = await getToken.json()
 
-      if (resToken.status === 200) {
-        const resUserInfo = await axios(`https://graph.zalo.me/v2.0/me?access_token=${resToken.data.access_token}&fields=id,birthday,name,gender,picture`)
-        return resUserInfo.data
-      }
+  //   // const getInfo = await fetch(`https://graph.zalo.me/v2.0/me?access_token=${resToken.access_token}&fields=id,birthday,name,gender,picture`)
+  //   // let resInfo = await getInfo.json();
 
-    } catch (error) {
-      throw new Error(errorName.INVALID_SNS_TOKEN);
-    }
-  };
+  //   // if (!resInfo) {
+  //   const resInfo = await axios({
+  //     method: "GET",
+  //     url: `https://graph.zalo.me/v2.0/me?access_token=${resToken.access_token}&fields=id,birthday,name,gender,picture.type(large)`,
 
-  loginWithSNS = async (input: LoginSNSInput) => {
-    const uSocial = await this.getUserSNSToken(input.zaloCode);
+  //   })
+  //   // }
+  //   return resInfo.data
+  // };
+
+  loginWithSNS = async (input: NewUserInput) => {
 
     let user = await this.usersService.findWhere({
       where: {
-        zaloId: uSocial?.id
+        zaloId: input.zaloId
       },
     });
 
     if (!user) {
-      let nickname = slugify(uSocial.name, {
+      let nickname = slugify(input.name ?? "", {
         replacement: "_",
         locale: "vi"
       })
@@ -180,11 +170,11 @@ export class AuthService {
         nickname += `_${existAccount + 1}`
       }
 
-      const { id: zaloId, picture: { data: { url } }, ...rest } = uSocial;
+      const { zaloId, avatarUrl, ...rest } = input;
 
-      const avatar = await this.mediaService.addMedia({ filePath: url, name: nickname })
+      const newAvatar = await this.mediaService.addMedia({ filePath: avatarUrl, name: nickname })
 
-      user = await this.usersService.create({ ...rest, nickname, avatar: avatar.id, zaloId })
+      user = await this.usersService.create({ ...rest, nickname, avatar: newAvatar.id, zaloId })
     }
 
 

@@ -28,11 +28,14 @@ export class Post extends BaseEntity implements Node {
   @Column('bigint')
   creatorId: number;
 
-  @Column('bigint', { array: true })
+  @Column('text', { array: true })
   medias?: number[];
 
-  @Column()
-  caption: string;
+  @Column({ nullable: true, default: "" })
+  caption?: string;
+
+  @Column({ nullable: true, default: "" })
+  rawCaption?: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -47,4 +50,4 @@ export class Post extends BaseEntity implements Node {
 }
 
 @ObjectType()
-export class PostConnection extends PaginationBase(Post) {}
+export class PostConnection extends PaginationBase(Post) { }

@@ -12,7 +12,7 @@ AWS.config.update({
  * S3 instance
  */
 export const s3 = new AWS.S3({
-  region: process.env.AWS_S3_REGION,
+  // region: process.env.AWS_S3_REGION,
   apiVersion: 'latest',
   /**
    * Timeout 1 minute
@@ -56,6 +56,7 @@ export const uploadMediaBase64 = (file: MulterFile, name: string) => {
       return data;
     })
     .catch(function (err) {
+      console.log(err)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return err;
     });

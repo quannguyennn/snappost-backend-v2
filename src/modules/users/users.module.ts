@@ -8,10 +8,11 @@ import { UsersMutationResolver } from './resolvers/users_mutation.resolver';
 import { UsersQueryResolver } from './resolvers/users_query.resolver';
 import { MediaModule } from '../media/media.module';
 import { UserFieldResolver } from './resolvers/user_field.resolver';
+import { FollowModule } from '../follow/follow.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserRepository]), forwardRef(() => MediaModule)],
+  imports: [TypeOrmModule.forFeature([User, UserRepository]), forwardRef(() => MediaModule), forwardRef(() => FollowModule)],
   providers: [UserDataLoader, UsersService, UsersQueryResolver, UsersMutationResolver, UserFieldResolver],
   exports: [UsersService, UserDataLoader],
 })
-export class UsersModule {}
+export class UsersModule { }

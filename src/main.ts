@@ -18,13 +18,6 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  app.enableCors({
-    allowedHeaders: 'Authorization, Content-Type, Content-Length, X-Frame-Options,Date',
-    credentials: true,
-    origin: 'https://klc.ntq.solutions',
-    preflightContinue: true,
-  });
-
   app.use(cookieParser());
   app.useStaticAssets('uploads', {
     prefix: '/uploads',

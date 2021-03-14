@@ -1,4 +1,5 @@
 import { ObjectType } from '@nestjs/graphql';
+import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { PaginationBase, Node } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 import {
@@ -11,11 +12,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum FollowStatus {
-  WAITING = 'Waiting',
-  ACCEPT = 'Accept',
-  REJECT = 'Reject',
-}
 
 @ObjectType('Follow', {
   implements: [Node],
@@ -37,8 +33,11 @@ export class Follow extends BaseEntity implements Node {
   @Column('bigint')
   followUser: number;
 
-  @Column()
-  status: string;
+  @Column({
+    type: "text",
+    enum: FollowStatus
+  })
+  status: FollowStatus;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -52,4 +51,4 @@ export class Follow extends BaseEntity implements Node {
   }
 }
 @ObjectType()
-export class FollowConnection extends PaginationBase(Follow) {}
+export class FollowConnection extends PaginationBase(Follow) { }

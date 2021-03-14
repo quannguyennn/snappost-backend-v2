@@ -13,16 +13,16 @@ import { MediaEntity } from './entities/media.entity';
 
 @Controller('media')
 export class MediaController {
-  constructor(private readonly mediaService: MediaService, private commandBus: CommandBus) {}
+  constructor(private readonly mediaService: MediaService, private commandBus: CommandBus) { }
 
   @UseGuards(JwtCookieGuard)
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (_req, file, callback) => {
-        if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimetype)) {
-          return callback(new Error('Only image files are allowed!'), false);
-        }
+        // if (!['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimetype)) {
+        //   return callback(new Error('Only image files are allowed!'), false);
+        // }
         callback(null, true);
       },
     }),

@@ -7,12 +7,8 @@ import { CurrentUser } from 'src/decorators/common.decorator';
 import { UpdateUserInput } from '../dto/new_user.input';
 @Resolver(() => User)
 export class UsersMutationResolver {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService) { }
 
-  // @Mutation(() => User)
-  // createUser(@Args('input') input: UserRegister) {
-  //   return this.userService.create(input);
-  // }
   @UseGuards(GqlCookieAuthGuard)
   @Mutation(() => User)
   async updateUserInfo(@CurrentUser() user: User, @Args('input') input: UpdateUserInput): Promise<User | undefined> {

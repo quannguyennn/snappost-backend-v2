@@ -8,11 +8,12 @@ import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) {}
+  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) { }
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
   };
+
   create = async (creatorId: number, input: CreatePostInput): Promise<Post> => {
     const newPost = this.postRepository.create({ creatorId, ...input });
     return await this.postRepository.save(newPost);
