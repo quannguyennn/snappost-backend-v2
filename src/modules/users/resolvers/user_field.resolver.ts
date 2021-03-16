@@ -3,8 +3,10 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/decorators/common.decorator';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
+import { Follow } from 'src/modules/follow/entities/follow.entity';
 import { FollowService } from 'src/modules/follow/services/follow.service';
 import { MediaService } from 'src/modules/media/services/media.service';
+import { UserDataLoader } from '../dataloaders/users.dataloader';
 import { User } from '../entities/users.entity';
 import { UsersService } from '../services/users.service';
 
@@ -14,7 +16,8 @@ export class UserFieldResolver {
     private readonly userService: UsersService,
     private readonly mediaService: MediaService,
     private readonly followService: FollowService,
-  ) {}
+    private readonly userDataloader: UserDataLoader
+  ) { }
 
   @ResolveField(() => String, { nullable: true })
   async avatarFilePath(@Parent() user: User): Promise<string | undefined> {
@@ -30,15 +33,18 @@ export class UserFieldResolver {
     }
   }
 
-  @ResolveField(() => Number, { defaultValue: 0 })
-  async nFollowing(@CurrentUser() user: User): Promise<number> {
-    const following = await this.followService.getFollowingUserId(user.id);
-    return following.length;
+  @ResolveField(() => [User], { nullable: true, defaultValue: [] })
+  async nFollowing(@CurrentUser() user: User): Promise<(User | Error)[]> {
+    const following = await this.followService.getListUserFollow(user.id);
+    const userId = following.map(item => item.followUser);
+    return await this.userDataloader.loadMany(userId)
   }
 
-  @ResolveField(() => Number, { defaultValue: 0 })
-  async nFollower(@CurrentUser() user: User): Promise<number> {
-    const follower = await this.followService.getFollowingUserId(user.id);
-    return follower.length;
+  @ResolveField(() => [User], { nullable: true, defaultValue: [] })
+  async nFollower(@CurrentUser() user: User): Promise<(User | Error)[]> {
+    const follower = await this.followService.getListUserFollowing(user.id);
+    const userId = follower.map(item => item.creatorId);
+    return await this.userDataloader.loadMany(userId)
+
   }
 }

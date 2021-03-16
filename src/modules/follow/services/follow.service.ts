@@ -7,7 +7,7 @@ import { FollowRepository } from '../repositories/follow.repository';
 
 @Injectable()
 export class FollowService {
-  constructor(private readonly followRepository: FollowRepository) {}
+  constructor(private readonly followRepository: FollowRepository) { }
 
   checkFollowStatus = async (creatorId: number, followUser: number): Promise<FollowStatus | undefined> => {
     const follow = await this.followRepository.findOne({ creatorId, followUser });
@@ -17,8 +17,15 @@ export class FollowService {
     }
   };
 
+  //ng minh follow
   getListUserFollow = async (creatorId: number): Promise<Follow[]> => {
-    const listUserFollow = await this.followRepository.find({ where: { creatorId } });
+    const listUserFollow = await this.followRepository.find({ where: { creatorId, status: FollowStatus.ACCEPT } });
+    return listUserFollow;
+  };
+
+  //follow minh
+  getListUserFollowing = async (followUser: number): Promise<Follow[]> => {
+    const listUserFollow = await this.followRepository.find({ where: { followUser, status: FollowStatus.ACCEPT } });
     return listUserFollow;
   };
 
