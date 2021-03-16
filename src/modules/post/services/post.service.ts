@@ -8,7 +8,7 @@ import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) { }
+  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) {}
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
@@ -44,8 +44,19 @@ export class PostService {
       },
       skip: limit * (page - 1),
       take: limit,
+      order: { createdAt: 'DESC' },
     });
     return createPaginationObject(data, total, page, limit);
+  };
+
+  getPostByUserId = async (creatorId: number, limit: number, page: number): Promise<PostConnection> => {
+    const [items, total] = await this.postRepository.findAndCount({
+      where: { creatorId },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return createPaginationObject(items, total, limit, page);
   };
 
   async pagination({ page, limit }: { page?: number; limit?: number }) {

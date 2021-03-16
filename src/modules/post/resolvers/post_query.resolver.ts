@@ -13,8 +13,24 @@ export class PostQueryResolver {
   constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) {}
 
   @UseGuards(GqlCookieAuthGuard)
-  @Query(() => PostConnection, { name: 'posts', nullable: true })
-  async post(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
+  @Query(() => PostConnection)
+  async getNewFeed(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
     return await this.postService.getListPost(user.id, args.page, args.limit);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => Post)
+  async getPostDetail(@Args('id') id: number): Promise<Post> {
+    return await this.postDataLoader.load(id);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => PostConnection)
+  async myPost(
+    @CurrentUser() user: User,
+    @Args('limit') limit: number,
+    @Args('page') page: number,
+  ): Promise<PostConnection> {
+    return await this.postService.getPostByUserId(user.id, limit, page);
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { async } from 'rxjs/internal/scheduler/async';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { FollowUserInput } from '../dtos/follow.input';
 import { Follow } from '../entities/follow.entity';
@@ -6,7 +7,15 @@ import { FollowRepository } from '../repositories/follow.repository';
 
 @Injectable()
 export class FollowService {
-  constructor(private readonly followRepository: FollowRepository) { }
+  constructor(private readonly followRepository: FollowRepository) {}
+
+  checkFollowStatus = async (creatorId: number, followUser: number): Promise<FollowStatus | undefined> => {
+    const follow = await this.followRepository.findOne({ creatorId, followUser });
+    if (!follow) return undefined;
+    else {
+      return follow.status;
+    }
+  };
 
   getListUserFollow = async (creatorId: number): Promise<Follow[]> => {
     const listUserFollow = await this.followRepository.find({ where: { creatorId } });
@@ -15,9 +24,8 @@ export class FollowService {
 
   getFollowingUserId = async (creatorId: number): Promise<number[]> => {
     const followingUser = await this.followRepository.find({ where: { creatorId, status: FollowStatus.ACCEPT } });
-    return followingUser.map(item => item.followUser)
-
-  }
+    return followingUser.map((item) => item.followUser);
+  };
 
   followUser = async (creatorId: number, input: FollowUserInput): Promise<boolean> => {
     const newFollowRequest = this.followRepository.create({ creatorId, ...input });

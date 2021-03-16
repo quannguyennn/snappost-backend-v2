@@ -13,7 +13,7 @@ export class UsersQueryResolver {
     private readonly userService: UsersService,
     private readonly userDataLoader: UserDataLoader,
     private readonly mediaService: MediaService,
-  ) { }
+  ) {}
 
   @Query(() => User, {
     name: 'me',
@@ -25,7 +25,7 @@ export class UsersQueryResolver {
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => User, { name: 'user', nullable: true })
-  async user(@Args('id') id: number): Promise<User | undefined> {
+  async getUserInfo(@Args('id') id: number): Promise<User | undefined> {
     return await this.userDataLoader.load(id);
   }
 
@@ -33,10 +33,11 @@ export class UsersQueryResolver {
   @Query(() => UserConnection)
   async searchUser(
     @CurrentUser() user: User,
-    @Args("keyword") keyword: string,
-    @Args({ name: "isRestricted", defaultValue: false }) isRestriced: boolean,
-    @Args("limit") limit: number,
-    @Args("page") page: number): Promise<UserConnection> {
-    return await this.userService.searchUser(user.id, keyword, isRestriced, limit, page)
+    @Args('keyword') keyword: string,
+    @Args({ name: 'isRestricted', defaultValue: false }) isRestriced: boolean,
+    @Args('limit') limit: number,
+    @Args('page') page: number,
+  ): Promise<UserConnection> {
+    return await this.userService.searchUser(user.id, keyword, isRestriced, limit, page);
   }
 }

@@ -1,7 +1,5 @@
-import { UseGuards } from '@nestjs/common';
-import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
 import { AuthService } from '../services/auth.service';
-import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { AuthCookie, CurrentUser } from 'src/decorators/common.decorator';
 import { User } from 'src/modules/users/entities/users.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
@@ -14,8 +12,7 @@ import { NewUserInput } from 'src/modules/users/dto/new_user.input';
 
 @Resolver()
 export class AuthResolver {
-  constructor(private readonly authService: AuthService, private readonly userService: UsersService) { }
-
+  constructor(private readonly authService: AuthService, private readonly userService: UsersService) {}
 
   // @Mutation(() => User)
   // async register(@Args('user') user: UserRegister): Promise<User> {

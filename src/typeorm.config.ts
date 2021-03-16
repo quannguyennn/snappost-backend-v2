@@ -2,10 +2,10 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthTokenEntity } from './modules/auth/entities/auth.entity';
 import { MediaEntity } from './modules/media/entities/media.entity';
 import { User } from './modules/users/entities/users.entity';
-import { Sample } from './sample/entities/sample.entity';
 import { Post } from './modules/post/entities/post.entity';
 import { Comments } from './modules/comment/entities/comment.entity';
 import { Follow } from './modules/follow/entities/follow.entity';
+import { Like } from './modules/post/entities/like.entity';
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   port: parseInt(process.env.DATABASE_PORT || '5432', 10),
@@ -15,5 +15,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DATABASE_NAME,
   synchronize: process.env.DATABASE_SYNC === 'true',
   logging: process.env.DATABASE_LOGGING === 'true',
-  entities: [User, MediaEntity, AuthTokenEntity, Sample, Post, Comments, Follow],
+  entities: [User, MediaEntity, AuthTokenEntity, Like, Post, Comments, Follow],
 };

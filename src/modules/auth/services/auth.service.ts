@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/services/users.service';
@@ -11,8 +9,7 @@ import jwtDecode from 'jwt-decode';
 import { AuthTokenEntity } from '../entities/auth.entity';
 import { DeepPartial, DeleteResult, FindConditions } from 'typeorm';
 import { snowflake } from 'src/helpers/common';
-import { errorName } from 'src/errors';
-import slugify from "slugify";
+import slugify from 'slugify';
 import { MediaService } from 'src/modules/media/services/media.service';
 import { NewUserInput } from 'src/modules/users/dto/new_user.input';
 
@@ -28,8 +25,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly authRepository: AuthRepository,
-    private readonly mediaService: MediaService
-  ) { }
+    private readonly mediaService: MediaService,
+  ) {}
 
   findOne = async (conditions?: FindConditions<AuthTokenEntity>) => {
     return await this.authRepository.findOne(conditions);
@@ -152,31 +149,29 @@ export class AuthService {
   // };
 
   loginWithSNS = async (input: NewUserInput) => {
-
     let user = await this.usersService.findWhere({
       where: {
-        zaloId: input.zaloId
+        zaloId: input.zaloId,
       },
     });
 
     if (!user) {
-      let nickname = slugify(input.name ?? "", {
-        replacement: "_",
-        locale: "vi"
-      })
+      let nickname = slugify(input.name ?? '', {
+        replacement: '_',
+        locale: 'vi',
+      });
 
-      const existAccount = await this.usersService.countByNickname(nickname)
+      const existAccount = await this.usersService.countByNickname(nickname);
       if (existAccount) {
-        nickname += `_${existAccount + 1}`
+        nickname += `_${existAccount + 1}`;
       }
 
       const { zaloId, avatarUrl, ...rest } = input;
 
-      const newAvatar = await this.mediaService.addMedia({ filePath: avatarUrl, name: nickname })
+      const newAvatar = await this.mediaService.addMedia({ filePath: avatarUrl, name: nickname });
 
-      user = await this.usersService.create({ ...rest, nickname, avatar: newAvatar.id, zaloId })
+      user = await this.usersService.create({ ...rest, nickname, avatar: newAvatar.id, zaloId });
     }
-
 
     const { ...result } = user;
     try {
