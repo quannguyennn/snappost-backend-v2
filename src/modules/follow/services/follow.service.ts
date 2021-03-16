@@ -27,6 +27,11 @@ export class FollowService {
     return followingUser.map((item) => item.followUser);
   };
 
+  getFollowerUserId = async (followUser: number): Promise<number[]> => {
+    const followingUser = await this.followRepository.find({ where: { followUser, status: FollowStatus.ACCEPT } });
+    return followingUser.map((item) => item.followUser);
+  };
+
   followUser = async (creatorId: number, input: FollowUserInput): Promise<boolean> => {
     const newFollowRequest = this.followRepository.create({ creatorId, ...input });
     await this.followRepository.save(newFollowRequest);

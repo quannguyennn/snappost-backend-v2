@@ -29,4 +29,16 @@ export class UserFieldResolver {
       return await this.followService.checkFollowStatus(me.id, user.id);
     }
   }
+
+  @ResolveField(() => Number, { defaultValue: 0 })
+  async nFollowing(@CurrentUser() user: User): Promise<number> {
+    const following = await this.followService.getFollowingUserId(user.id);
+    return following.length;
+  }
+
+  @ResolveField(() => Number, { defaultValue: 0 })
+  async nFollower(@CurrentUser() user: User): Promise<number> {
+    const follower = await this.followService.getFollowingUserId(user.id);
+    return follower.length;
+  }
 }
