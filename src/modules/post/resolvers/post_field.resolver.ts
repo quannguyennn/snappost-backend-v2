@@ -22,7 +22,6 @@ export class PostFieldResolver {
     private readonly mediaDataloader: MediaDataLoader,
   ) {}
 
-  @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => [Comments], { nullable: true })
   async postComments(@Parent() post: Post): Promise<Comments[] | undefined> {
     const comments = this.commentService.findPostComments(post.id);
@@ -40,13 +39,11 @@ export class PostFieldResolver {
     return await this.likeService.isLike(user.id, post.id);
   }
 
-  @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => [MediaEntity], { nullable: true })
   async mediasPath(@Parent() post: Post): Promise<(MediaEntity | Error)[]> {
     return await this.mediaDataloader.loadMany(post.medias ?? []);
   }
 
-  @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => User, { nullable: true })
   async creatorInfo(@Parent() post: Post): Promise<User | undefined> {
     const user = this.userService.findById(post.creatorId);

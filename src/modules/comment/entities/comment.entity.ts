@@ -20,10 +20,8 @@ export class Comments implements Node {
   @Column()
   creatorId: number;
 
-  //   @Column('bigint', { array: true })
-  //   medias?: string[];
-  @Column()
-  postId: string;
+  @Column({ nullable: true })
+  postId: number;
 
   @Column()
   parentId: number;
@@ -36,10 +34,6 @@ export class Comments implements Node {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  constructor(partial: DeepPartial<Comments>) {
-    Object.assign(this, { id: snowflake.nextId(), ...partial });
-  }
 }
 
 @ObjectType()

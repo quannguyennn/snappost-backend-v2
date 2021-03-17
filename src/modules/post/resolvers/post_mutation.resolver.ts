@@ -2,15 +2,15 @@ import { UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/decorators/common.decorator';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
+import { LikeService } from 'src/modules/post/services/like.service';
 import { User } from 'src/modules/users/entities/users.entity';
 import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
 import { Post } from '../entities/post.entity';
-
 import { PostService } from '../services/post.service';
 
 @Resolver(() => Post)
 export class PostMutationResolver {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService, private readonly likeService: LikeService) {}
 
   // @Mutation(() => Number)
   // returnNumber(): number {
@@ -31,5 +31,11 @@ export class PostMutationResolver {
   @Mutation(() => Boolean)
   async removePost(@Args('id', { type: () => ID }) id: number): Promise<boolean> {
     return await this.postService.remove(id);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => Boolean)
+  async reactToPost(@CurrentUser() user: User, @Args('postId') postId: number) {
+    return await this.likeService.reactToPost(user.id, postId);
   }
 }

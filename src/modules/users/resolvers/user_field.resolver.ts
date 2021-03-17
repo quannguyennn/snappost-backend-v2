@@ -16,8 +16,8 @@ export class UserFieldResolver {
     private readonly userService: UsersService,
     private readonly mediaService: MediaService,
     private readonly followService: FollowService,
-    private readonly userDataloader: UserDataLoader
-  ) { }
+    private readonly userDataloader: UserDataLoader,
+  ) {}
 
   @ResolveField(() => String, { nullable: true })
   async avatarFilePath(@Parent() user: User): Promise<string | undefined> {
@@ -36,15 +36,14 @@ export class UserFieldResolver {
   @ResolveField(() => [User], { nullable: true, defaultValue: [] })
   async nFollowing(@CurrentUser() user: User): Promise<(User | Error)[]> {
     const following = await this.followService.getListUserFollow(user.id);
-    const userId = following.map(item => item.followUser);
-    return await this.userDataloader.loadMany(userId)
+    const userId = following.map((item) => item.followUser);
+    return await this.userDataloader.loadMany(userId);
   }
 
   @ResolveField(() => [User], { nullable: true, defaultValue: [] })
   async nFollower(@CurrentUser() user: User): Promise<(User | Error)[]> {
     const follower = await this.followService.getListUserFollowing(user.id);
-    const userId = follower.map(item => item.creatorId);
-    return await this.userDataloader.loadMany(userId)
-
+    const userId = follower.map((item) => item.creatorId);
+    return await this.userDataloader.loadMany(userId);
   }
 }

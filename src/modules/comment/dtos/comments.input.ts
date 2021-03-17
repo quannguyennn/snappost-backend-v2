@@ -6,10 +6,10 @@ export class CreateCommentInput {
   content: string;
 
   @Field({ defaultValue: 0 })
-  parentId?: number;
+  parentId: number;
 
   @Field()
-  postId: string;
+  postId: number;
 }
 
 @InputType()
@@ -21,5 +21,5 @@ export class UpdateCommentInput extends CreateCommentInput {
 @InputType()
 export class DeleteCommentInput {
   @Field()
-  id: string;
+  id: number;
 }

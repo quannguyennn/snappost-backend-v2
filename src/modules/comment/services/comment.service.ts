@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
+import { pubSub } from 'src/helpers/pubsub';
 import { CreateCommentInput, UpdateCommentInput } from '../dtos/comments.input';
 import { Comments } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
@@ -9,6 +11,7 @@ export class CommentService {
 
   create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
     const newComment = this.commentRepository.create({ creatorId, ...input });
+    void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: newComment });
     return await this.commentRepository.save(newComment);
   };
 

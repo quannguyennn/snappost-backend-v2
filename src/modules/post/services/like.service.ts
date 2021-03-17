@@ -13,4 +13,15 @@ export class LikeService {
     const like = await this.likeRepository.findOne({ userId, postId });
     return like ? true : false;
   };
+
+  reactToPost = async (userId: number, postId: number) => {
+    const reaction = await this.likeRepository.findOne({ userId, postId });
+    if (!reaction) {
+      const newReact = this.likeRepository.create({ userId, postId });
+      await this.likeRepository.save(newReact);
+    } else {
+      await this.likeRepository.delete(reaction.id);
+    }
+    return reaction ? false : true;
+  };
 }
