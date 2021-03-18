@@ -10,7 +10,7 @@ import { PostService } from '../services/post.service';
 
 @Resolver(() => Post)
 export class PostQueryResolver {
-  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) {}
+  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) { }
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => PostConnection)

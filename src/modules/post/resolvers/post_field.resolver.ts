@@ -15,18 +15,10 @@ import { PostService } from '../services/post.service';
 @Resolver(() => Post)
 export class PostFieldResolver {
   constructor(
-    private readonly postService: PostService,
-    private readonly commentService: CommentService,
     private readonly userService: UsersService,
     private readonly likeService: LikeService,
     private readonly mediaDataloader: MediaDataLoader,
-  ) {}
-
-  @ResolveField(() => [Comments], { nullable: true })
-  async postComments(@Parent() post: Post): Promise<Comments[] | undefined> {
-    const comments = this.commentService.findPostComments(post.id);
-    return comments;
-  }
+  ) { }
 
   @ResolveField(() => Number, { defaultValue: 0 })
   async totalLike(@Parent() post: Post): Promise<number> {
