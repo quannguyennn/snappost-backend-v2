@@ -13,7 +13,7 @@ import { MediaEntity } from './entities/media.entity';
 
 @Controller('media')
 export class MediaController {
-  constructor(private readonly mediaService: MediaService, private commandBus: CommandBus) { }
+  constructor(private readonly mediaService: MediaService, private commandBus: CommandBus) {}
 
   @UseGuards(JwtCookieGuard)
   @Post('upload')
@@ -31,13 +31,11 @@ export class MediaController {
     const ext = path.extname(file.originalname.toLowerCase());
     const fileName = new Date().getTime() + ext;
     const response = await uploadMediaBase64(file, fileName);
-    const newMedia = new MediaEntity({
+    return this.mediaService.addMedia({
       name: file.originalname,
       mimeType: file.mimetype,
       filePath: response.Location,
       fileSize: file.size,
-      ownerId: id,
     });
-    return this.mediaService.addMedia(newMedia);
   }
 }

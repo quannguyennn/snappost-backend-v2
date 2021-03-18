@@ -18,10 +18,6 @@ export enum AppRoles {
 })
 export class User implements Node {
   @PrimaryGeneratedColumn()
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
   id: number;
 
   @Column()
@@ -30,7 +26,7 @@ export class User implements Node {
   @Column({ length: 50 })
   nickname: string;
 
-  @Column({ nullable: true, default: "" })
+  @Column({ default: `Hi, Im new to Snappost` })
   intro: string;
 
   @Column({ unique: true, nullable: true })
@@ -47,14 +43,10 @@ export class User implements Node {
 
   @UpdateDateColumn({ name: 'updatedAt', nullable: true })
   updatedAt: Date;
-
-  constructor(partial: DeepPartial<User>) {
-    Object.assign(this, { id: snowflake.nextId(), ...partial });
-  }
 }
 
 @ObjectType()
-export class UserConnection extends PaginationBase(User) { }
+export class UserConnection extends PaginationBase(User) {}
 
 @ObjectType()
 export class FrequentUser extends User {

@@ -3,6 +3,7 @@ import { Args, ID, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/decorators/common.decorator';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { LikeService } from 'src/modules/post/services/like.service';
+import { ReportService } from 'src/modules/post/services/report.service';
 import { User } from 'src/modules/users/entities/users.entity';
 import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
 import { Post } from '../entities/post.entity';
@@ -10,7 +11,11 @@ import { PostService } from '../services/post.service';
 
 @Resolver(() => Post)
 export class PostMutationResolver {
-  constructor(private readonly postService: PostService, private readonly likeService: LikeService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly likeService: LikeService,
+    private readonly reportService: ReportService,
+  ) {}
 
   // @Mutation(() => Number)
   // returnNumber(): number {
@@ -29,7 +34,7 @@ export class PostMutationResolver {
   }
 
   @Mutation(() => Boolean)
-  async removePost(@Args('id', { type: () => ID }) id: number): Promise<boolean> {
+  async removePost(@Args('id') id: number): Promise<boolean> {
     return await this.postService.remove(id);
   }
 
@@ -37,5 +42,11 @@ export class PostMutationResolver {
   @Mutation(() => Boolean)
   async reactToPost(@CurrentUser() user: User, @Args('postId') postId: number) {
     return await this.likeService.reactToPost(user.id, postId);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => Boolean)
+  async reportPost(@CurrentUser() user: User, @Args('postId') postId: number) {
+    return await this.reportService.reportPost(user.id, postId);
   }
 }

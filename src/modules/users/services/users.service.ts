@@ -12,7 +12,7 @@ import { ApolloError } from 'apollo-server';
 import { FollowService } from 'src/modules/follow/services/follow.service';
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) { }
+  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) {}
 
   create = (data: DeepPartial<User>) => {
     try {
@@ -33,7 +33,10 @@ export class UsersService {
   };
 
   countByNickname = (nickname: string): Promise<number> => {
-    return this.userRepository.createQueryBuilder("user").where("user.nickname LIKE :nickname", { nickname: `${nickname}%` }).getCount()
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.nickname LIKE :nickname', { nickname: `${nickname}%` })
+      .getCount();
   };
   findByPhone = (phone: string): Promise<User | undefined> => {
     return this.userRepository.findOne({ where: { phone } });
@@ -47,17 +50,40 @@ export class UsersService {
     return this.userRepository.findOne(data);
   };
 
-  searchUser = async (userId: number, keyword: string, isRestriced: boolean, limit: number, page: number): Promise<UserConnection> => {
+  searchUser = async (
+    userId: number,
+    keyword: string,
+    isRestriced: boolean,
+    limit: number,
+    page: number,
+  ): Promise<UserConnection> => {
     try {
-      const query = this.userRepository.createQueryBuilder("user").where("(user.name ILIKE :name OR user.nickname ILIKE :nickname)", { name: `%${keyword}%`, nickname: `%${keyword}%` })
+      const query = this.userRepository
+        .createQueryBuilder('user')
+        .where('(user.name ILIKE :name OR user.nickname ILIKE :nickname)', {
+          name: `%${keyword}%`,
+          nickname: `%${keyword}%`,
+        });
       if (isRestriced) {
-        const followingUser = await this.followService.getFollowingUserId(userId)
-        query.andWhere("user.id IN (:...userIds)", { userIds: followingUser })
+        const followingUser = await this.followService.getFollowingUserId(userId);
+        query.andWhere('user.id IN (:...userIds)', { userIds: followingUser });
       }
-      const [items, total] = await query.limit(limit).offset((page - 1) * limit).getManyAndCount();
+      const [items, total] = await query
+        .limit(limit)
+        .offset((page - 1) * limit)
+        .getManyAndCount();
       return createPaginationObject(items, total, limit, page);
     } catch (error) {
-      throw new ApolloError(error.message)
+      throw new ApolloError(error.message);
     }
-  }
+  };
+
+  isAvailable = async (nickname: string) => {
+    try {
+      const user = await this.userRepository.findOne({ nickname });
+      return user ? false : true;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
 }

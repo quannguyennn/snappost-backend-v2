@@ -10,12 +10,18 @@ import { PostService } from '../services/post.service';
 
 @Resolver(() => Post)
 export class PostQueryResolver {
-  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) { }
+  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) {}
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => PostConnection)
   async getNewFeed(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
     return await this.postService.getListPost(user.id, args.page, args.limit);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => PostConnection)
+  async getExplorePost(@Args('limit') limit: number, @Args('page') page: number) {
+    return await this.postService.getExplorePost(limit, page);
   }
 
   @UseGuards(GqlCookieAuthGuard)

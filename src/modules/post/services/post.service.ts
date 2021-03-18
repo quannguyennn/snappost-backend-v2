@@ -49,6 +49,15 @@ export class PostService {
     return createPaginationObject(data, total, page, limit);
   };
 
+  getExplorePost = async (limit: number, page: number) => {
+    const [items, total] = await this.postRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return createPaginationObject(items, total, page, limit);
+  };
+
   getPostByUserId = async (creatorId: number, limit: number, page: number): Promise<PostConnection> => {
     const [items, total] = await this.postRepository.findAndCount({
       where: { creatorId },
@@ -56,7 +65,7 @@ export class PostService {
       take: limit,
       order: { createdAt: 'DESC' },
     });
-    return createPaginationObject(items, total, limit, page);
+    return createPaginationObject(items, total, page, limit);
   };
 
   async pagination({ page, limit }: { page?: number; limit?: number }) {

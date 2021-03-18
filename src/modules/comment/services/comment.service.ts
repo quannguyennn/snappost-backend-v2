@@ -11,8 +11,9 @@ export class CommentService {
 
   create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
     const newComment = this.commentRepository.create({ creatorId, ...input });
-    void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: newComment });
-    return await this.commentRepository.save(newComment);
+    const saveComment = await this.commentRepository.save(newComment);
+    void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: saveComment });
+    return saveComment;
   };
 
   update = async (input: UpdateCommentInput): Promise<Comments> => {
@@ -26,6 +27,6 @@ export class CommentService {
   };
 
   findPostComments = async (id: number): Promise<Comments[]> => {
-    return this.commentRepository.find({ where: { postId: id } });
+    return this.commentRepository.find({ where: { postId: id }, order: { createdAt: 'DESC' } });
   };
 }

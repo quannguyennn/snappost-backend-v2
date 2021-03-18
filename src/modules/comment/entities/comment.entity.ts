@@ -11,10 +11,6 @@ import { snowflake } from 'src/helpers/common';
 })
 export class Comments implements Node {
   @PrimaryGeneratedColumn()
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
   id: number;
 
   @Column()

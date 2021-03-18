@@ -71,17 +71,13 @@ export class MediaMutationsResolver {
       }
     }
 
-    return await this.mediaService.addMedia(
-      {
-        name: `${id}${fileExt}`,
-        mimeType: file.mimetype,
-        filePath: filePath,
-        fileSize: fileSize,
-        type: FileTypeEnum.FILE,
-        ownerId: currentUser.id,
-      },
-      parentId,
-    );
+    return await this.mediaService.addMedia({
+      name: `${id}${fileExt}`,
+      mimeType: file.mimetype,
+      filePath: filePath,
+      fileSize: fileSize,
+      type: FileTypeEnum.FILE,
+    });
   }
 
   @Mutation(() => MediaEntity)
@@ -111,16 +107,12 @@ export class MediaMutationsResolver {
       )
       .promise();
 
-    return await this.mediaService.addMedia(
-      {
-        name: res.Key,
-        mimeType: file.mimetype,
-        filePath: res.Location,
-        type: FileTypeEnum.FILE,
-        ownerId: currentUser.id,
-      },
-      parentId,
-    );
+    return await this.mediaService.addMedia({
+      name: res.Key,
+      mimeType: file.mimetype,
+      filePath: res.Location,
+      type: FileTypeEnum.FILE,
+    });
   }
 
   @Mutation(() => MediaEntity)
@@ -140,13 +132,9 @@ export class MediaMutationsResolver {
   @Mutation(() => MediaEntity)
   @AuthCookie()
   async createDir(@Args() data: CreateDirArgs, @CurrentUser() currentUser: User): Promise<MediaEntity> {
-    return await this.mediaService.addMedia(
-      {
-        name: data.dirName,
-        ownerId: currentUser.id,
-        type: FileTypeEnum.DIR,
-      },
-      data.parentId,
-    );
+    return await this.mediaService.addMedia({
+      name: data.dirName,
+      type: FileTypeEnum.DIR,
+    });
   }
 }

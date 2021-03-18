@@ -1,13 +1,10 @@
-import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({
   name: 'authTokens',
 })
 export class AuthTokenEntity {
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column('bigint', { name: 'userId' })

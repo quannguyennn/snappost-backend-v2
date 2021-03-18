@@ -71,7 +71,7 @@ export class AuthService {
   };
 
   createToken = async (data: DeepPartial<AuthTokenEntity>) => {
-    const authToken = this.authRepository.create({ id: snowflake.nextId(), ...data });
+    const authToken = this.authRepository.create({ ...data });
     const newAuthToken = await this.authRepository.save(authToken);
     return await this.authRepository.findOne(newAuthToken.id);
   };
@@ -188,7 +188,7 @@ export class AuthService {
         refreshToken: authToken?.refreshToken,
       };
     } catch (err) {
-      throw new ApolloError('Error');
+      throw new ApolloError(err.message);
     }
   };
 

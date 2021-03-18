@@ -18,22 +18,4 @@ export class MediaFieldResolver {
   //     ? media.filePath
   //     : `${process.env.WEB_DOMAIN ?? ''}/${media.filePath ?? ''}`;
   // }
-
-  @ResolveField(() => User, {
-    nullable: true,
-  })
-  owner(@Parent() media: MediaEntity) {
-    if (media.ownerId) return this.userDataLoader.load(media.ownerId);
-    return null;
-  }
-
-  @ResolveField(() => MediaCapability, {
-    nullable: true,
-  })
-  capabilities() {
-    return {
-      canEdit: true,
-      canDelete: true,
-    };
-  }
 }

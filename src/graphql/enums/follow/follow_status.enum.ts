@@ -1,11 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum FollowStatus {
-    WAITING = 'Waiting',
-    ACCEPT = 'Accept',
+  IS_ME = 'IS_ME',
+  WAITING = 'Waiting',
+  ACCEPT = 'Accept',
 }
 
-
 registerEnumType(FollowStatus, {
-    name: 'FollowStatus',
+  name: 'FollowStatus',
 });

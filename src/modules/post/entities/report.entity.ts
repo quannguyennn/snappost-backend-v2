@@ -6,9 +6,9 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeor
   implements: [Node],
 })
 @Entity({
-  name: 'likes',
+  name: 'reports',
 })
-export class Like implements Node {
+export class Report implements Node {
   @PrimaryGeneratedColumn()
   id: number;
 

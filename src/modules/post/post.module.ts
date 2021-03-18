@@ -1,5 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Report } from 'src/modules/post/entities/report.entity';
+import { ReportRepository } from 'src/modules/post/repositories/report.repository';
+import { ReportService } from 'src/modules/post/services/report.service';
 import { CommentModule } from '../comment/comment.module';
 import { FollowModule } from '../follow/follow.module';
 import { MediaModule } from '../media/media.module';
@@ -17,13 +20,21 @@ import { PostService } from './services/post.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Post, PostRepository, Like, LikeRepository]),
+    TypeOrmModule.forFeature([Post, PostRepository, Like, LikeRepository, Report, ReportRepository]),
     forwardRef(() => CommentModule),
     forwardRef(() => FollowModule),
     forwardRef(() => UsersModule),
     forwardRef(() => MediaModule),
   ],
-  providers: [PostMutationResolver, PostService, PostQueryResolver, PostDataloader, PostFieldResolver, LikeService],
-  exports: [PostService, PostDataloader, LikeService],
+  providers: [
+    PostMutationResolver,
+    PostService,
+    PostQueryResolver,
+    PostDataloader,
+    PostFieldResolver,
+    LikeService,
+    ReportService,
+  ],
+  exports: [PostService, PostDataloader, LikeService, ReportService],
 })
 export class PostModule {}

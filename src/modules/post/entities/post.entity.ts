@@ -19,10 +19,6 @@ import { snowflake } from 'src/helpers/common';
 })
 export class Post extends BaseEntity implements Node {
   @PrimaryGeneratedColumn()
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
   id: number;
 
   @Column('bigint')
@@ -31,10 +27,10 @@ export class Post extends BaseEntity implements Node {
   @Column('text', { array: true })
   medias?: number[];
 
-  @Column({ nullable: true, default: "" })
+  @Column({ nullable: true, default: '' })
   caption?: string;
 
-  @Column({ nullable: true, default: "" })
+  @Column({ nullable: true, default: '' })
   rawCaption?: string;
 
   @CreateDateColumn()
@@ -42,12 +38,7 @@ export class Post extends BaseEntity implements Node {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  constructor(partial: DeepPartial<Post>) {
-    super();
-    Object.assign(this, { id: snowflake.nextId(), ...partial });
-  }
 }
 
 @ObjectType()
-export class PostConnection extends PaginationBase(Post) { }
+export class PostConnection extends PaginationBase(Post) {}

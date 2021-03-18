@@ -12,7 +12,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-
 @ObjectType('Follow', {
   implements: [Node],
 })
@@ -21,10 +20,6 @@ import {
 })
 export class Follow extends BaseEntity implements Node {
   @PrimaryGeneratedColumn()
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
   id: number;
 
   @Column('bigint')
@@ -34,8 +29,8 @@ export class Follow extends BaseEntity implements Node {
   followUser: number;
 
   @Column({
-    type: "text",
-    enum: FollowStatus
+    type: 'text',
+    enum: FollowStatus,
   })
   status: FollowStatus;
 
@@ -44,11 +39,6 @@ export class Follow extends BaseEntity implements Node {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  constructor(partial: DeepPartial<Follow>) {
-    super();
-    Object.assign(this, { id: snowflake.nextId(), ...partial });
-  }
 }
 @ObjectType()
-export class FollowConnection extends PaginationBase(Follow) { }
+export class FollowConnection extends PaginationBase(Follow) {}

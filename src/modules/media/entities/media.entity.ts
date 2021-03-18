@@ -1,18 +1,8 @@
-import {
-  Column,
-  Entity,
-  Tree,
-  TreeChildren,
-  TreeParent,
-  BaseEntity,
-  DeepPartial,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ObjectType, Field, Int, HideField, ID } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { FileTypeEnum } from 'src/graphql/enums/file_type';
-import { snowflake } from 'src/helpers/common';
 
 @ObjectType('Media', {
   implements: [Node],
@@ -20,13 +10,8 @@ import { snowflake } from 'src/helpers/common';
 @Entity({
   name: 'media',
 })
-@Tree('closure-table')
 export class MediaEntity extends BaseEntity implements Node {
   @PrimaryGeneratedColumn()
-  @Column('bigint', {
-    primary: true,
-    unsigned: true,
-  })
   id: number;
 
   @Column({ length: 500 })
@@ -47,9 +32,6 @@ export class MediaEntity extends BaseEntity implements Node {
   })
   isDeleted: boolean;
 
-  @Column({ nullable: true })
-  ownerId?: number;
-
   @Column({
     type: 'enum',
     default: FileTypeEnum.FILE,
@@ -62,19 +44,6 @@ export class MediaEntity extends BaseEntity implements Node {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @HideField()
-  @TreeChildren({ cascade: true })
-  children: MediaEntity[];
-
-  @HideField()
-  @TreeParent()
-  parent?: MediaEntity;
-
-  constructor(data: DeepPartial<MediaEntity>) {
-    super();
-    Object.assign(this, { id: snowflake.nextId(), ...data });
-  }
 }
 
 @ObjectType('MediaConnection')

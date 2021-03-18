@@ -40,4 +40,10 @@ export class UsersQueryResolver {
   ): Promise<UserConnection> {
     return await this.userService.searchUser(user.id, keyword, isRestriced, limit, page);
   }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => Boolean)
+  async isAvailable(@Args('nickname') nickname: string) {
+    return await this.userService.isAvailable(nickname);
+  }
 }

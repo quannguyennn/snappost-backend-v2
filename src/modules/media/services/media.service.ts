@@ -7,12 +7,8 @@ import { DeepPartial } from 'typeorm';
 export class MediaService {
   constructor(private readonly mediaRepository: MediaRepository) {}
 
-  addMedia = async (data: DeepPartial<MediaEntity>, parentId?: number | string) => {
+  addMedia = async (data: DeepPartial<MediaEntity>) => {
     const media = this.mediaRepository.create(data);
-    if (parentId) {
-      const parent = await this.mediaRepository.findOne(parentId);
-      media.parent = parent;
-    }
     return await this.mediaRepository.save(media);
   };
 

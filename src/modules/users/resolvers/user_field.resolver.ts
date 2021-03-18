@@ -25,10 +25,12 @@ export class UserFieldResolver {
     return image?.filePath;
   }
 
+  @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => FollowStatus, { nullable: true })
-  async followStatus(@CurrentUser() me: User, @Parent() user: User): Promise<FollowStatus | undefined> {
-    if (user.id === me.id) return undefined;
-    else {
+  async followStatus(@CurrentUser() me: User, @Parent() user: User): Promise<FollowStatus | undefined | null> {
+    if (user.id === me.id) {
+      return FollowStatus.IS_ME;
+    } else {
       return await this.followService.checkFollowStatus(me.id, user.id);
     }
   }
