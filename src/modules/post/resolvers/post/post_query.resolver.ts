@@ -3,14 +3,14 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/decorators/common.decorator';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { User } from 'src/modules/users/entities/users.entity';
-import { PostDataloader } from '../dataloaders/post.dataloaders';
-import { PostArgs } from '../dtos/post.args';
-import { Post, PostConnection } from '../entities/post.entity';
-import { PostService } from '../services/post.service';
+import { PostDataloader } from '../../dataloaders/post.dataloaders';
+import { PostArgs } from '../../dtos/post.args';
+import { Post, PostConnection } from '../../entities/post.entity';
+import { PostService } from '../../services/post.service';
 
 @Resolver(() => Post)
 export class PostQueryResolver {
-  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) { }
+  constructor(private readonly postService: PostService, private readonly postDataLoader: PostDataloader) {}
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => PostConnection)

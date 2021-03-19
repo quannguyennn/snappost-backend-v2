@@ -1,9 +1,7 @@
-import { UseGuards } from '@nestjs/common';
 import { Args, Resolver, Subscription } from '@nestjs/graphql';
 import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
-import { GqlAuthGuard } from 'src/guards/gql-auth.guard';
 import { pubSub } from 'src/helpers/pubsub';
-import { Comments } from 'src/modules/comment/entities/comment.entity';
+import { CommentDeletePayload, Comments } from 'src/modules/comment/entities/comment.entity';
 
 @Resolver(() => Comments)
 export class CommentSubcriptionResolver {
@@ -14,5 +12,14 @@ export class CommentSubcriptionResolver {
   })
   onCreateComment(@Args('postId') postId: number) {
     return pubSub.asyncIterator(PubsubEventEnum.onCreateComment);
+  }
+
+  @Subscription(() => CommentDeletePayload, {
+    filter: (payload, vars, context) => {
+      return payload.onDeleteComment.postId === vars.postId;
+    },
+  })
+  onDeleteComment(@Args('postId') postId: number) {
+    return pubSub.asyncIterator(PubsubEventEnum.onDeleteComment);
   }
 }

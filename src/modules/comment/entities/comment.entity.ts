@@ -1,5 +1,5 @@
 import { Entity, Column, DeepPartial, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { snowflake } from 'src/helpers/common';
 
@@ -30,6 +30,15 @@ export class Comments implements Node {
 
   @UpdateDateColumn()
   updatedAt: Date;
+}
+
+@ObjectType()
+export class CommentDeletePayload {
+  @Field()
+  id: number;
+
+  @Field()
+  postId: number
 }
 
 @ObjectType()

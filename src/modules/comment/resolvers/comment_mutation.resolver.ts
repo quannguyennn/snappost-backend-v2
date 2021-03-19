@@ -23,7 +23,7 @@ export class CommentMutationResolver {
   }
 
   @Mutation(() => Boolean)
-  async removeComment(@Args('id') id: number): Promise<boolean> {
-    return await this.commentService.remove(id);
+  async removeComment(@Args('id') id: number, @Args('postId') postId: number): Promise<boolean> {
+    return await this.commentService.remove(id, postId);
   }
 }

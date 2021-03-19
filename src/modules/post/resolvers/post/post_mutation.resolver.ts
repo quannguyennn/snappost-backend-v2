@@ -5,9 +5,9 @@ import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { LikeService } from 'src/modules/post/services/like.service';
 import { ReportService } from 'src/modules/post/services/report.service';
 import { User } from 'src/modules/users/entities/users.entity';
-import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
-import { Post } from '../entities/post.entity';
-import { PostService } from '../services/post.service';
+import { CreatePostInput, UpdatePostInput } from '../../dtos/create_post.input';
+import { Post } from '../../entities/post.entity';
+import { PostService } from '../../services/post.service';
 
 @Resolver(() => Post)
 export class PostMutationResolver {

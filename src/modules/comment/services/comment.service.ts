@@ -8,7 +8,7 @@ import { CommentRepository } from '../repositories/comment.repository';
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly commentRepository: CommentRepository) { }
+  constructor(private readonly commentRepository: CommentRepository) {}
 
   create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
     const newComment = this.commentRepository.create({ creatorId, ...input });
@@ -22,13 +22,19 @@ export class CommentService {
     return this.commentRepository.findOneOrFail(input.id);
   };
 
-  remove = async (id: number): Promise<boolean> => {
+  remove = async (id: number, postId: number): Promise<boolean> => {
     await this.commentRepository.delete(id);
+    void pubSub.publish(PubsubEventEnum.onDeleteComment, { onDeleteComment: { id, postId } });
     return true;
   };
 
   findPostComments = async (id: number, limit: number, page: number): Promise<CommentConnection> => {
-    const [items, total] = await this.commentRepository.findAndCount({ where: { postId: id }, skip: (page - 1) * limit, take: limit, order: { createdAt: 'DESC' } })
-    return createPaginationObject(items, total, page, limit)
+    const [items, total] = await this.commentRepository.findAndCount({
+      where: { postId: id },
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return createPaginationObject(items, total, page, limit);
   };
 }

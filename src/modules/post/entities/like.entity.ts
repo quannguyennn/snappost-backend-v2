@@ -1,4 +1,4 @@
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Node } from 'src/graphql/types/common.interface.entity';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -20,4 +20,13 @@ export class Like implements Node {
 
   @CreateDateColumn()
   createdAt: Date;
+}
+
+@ObjectType()
+export class UnLikeSubscription {
+  @Field()
+  postId: number;
+
+  @Field()
+  id: number;
 }

@@ -8,9 +8,9 @@ import { MediaDataLoader } from 'src/modules/media/dataloaders/media.dataloader'
 import { MediaEntity } from 'src/modules/media/entities/media.entity';
 import { User } from 'src/modules/users/entities/users.entity';
 import { UsersService } from 'src/modules/users/services/users.service';
-import { Post } from '../entities/post.entity';
-import { LikeService } from '../services/like.service';
-import { PostService } from '../services/post.service';
+import { Post } from '../../entities/post.entity';
+import { LikeService } from '../../services/like.service';
+import { PostService } from '../../services/post.service';
 
 @Resolver(() => Post)
 export class PostFieldResolver {
@@ -18,7 +18,7 @@ export class PostFieldResolver {
     private readonly userService: UsersService,
     private readonly likeService: LikeService,
     private readonly mediaDataloader: MediaDataLoader,
-  ) { }
+  ) {}
 
   @ResolveField(() => Number, { defaultValue: 0 })
   async totalLike(@Parent() post: Post): Promise<number> {
