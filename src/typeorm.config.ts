@@ -7,6 +7,7 @@ import { Comments } from './modules/comment/entities/comment.entity';
 import { Follow } from './modules/follow/entities/follow.entity';
 import { Like } from './modules/post/entities/like.entity';
 import { Report } from 'src/modules/post/entities/report.entity';
+
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   port: parseInt(process.env.DATABASE_PORT || '5432', 10),

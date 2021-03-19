@@ -38,6 +38,7 @@ export class UsersService {
       .where('user.nickname LIKE :nickname', { nickname: `${nickname}%` })
       .getCount();
   };
+
   findByPhone = (phone: string): Promise<User | undefined> => {
     return this.userRepository.findOne({ where: { phone } });
   };
@@ -60,13 +61,17 @@ export class UsersService {
     try {
       const query = this.userRepository
         .createQueryBuilder('user')
-        .where('(user.name ILIKE :name OR user.nickname ILIKE :nickname)', {
+        .where('user.name ILIKE :name OR user.nickname ILIKE :nickname', {
           name: `%${keyword}%`,
           nickname: `%${keyword}%`,
         });
       if (isRestriced) {
         const followingUser = await this.followService.getFollowingUserId(userId);
-        query.andWhere('user.id IN (:...userIds)', { userIds: followingUser });
+        if (followingUser.length) {
+          query.andWhere('user.id IN (:...userIds)', { userIds: followingUser });
+        } else {
+          query.andWhere('user.id < 0');
+        }
       }
       const [items, total] = await query
         .limit(limit)
