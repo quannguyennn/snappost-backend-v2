@@ -52,4 +52,19 @@ export class FollowService {
     }
     return true;
   };
+
+  handleFollowRequest = async (creatorId: number, followeeId: number, accept: boolean) => {
+    try {
+      const follow = await this.followRepository.findOne({ creatorId, followUser: followeeId, status: FollowStatus.WAITING })
+      if (!follow) throw new Error("not found")
+      if (accept) {
+        await this.followRepository.update({ id: follow.id }, { status: FollowStatus.ACCEPT })
+      } else {
+        await this.followRepository.delete({ id: follow.id })
+      }
+      return accept
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }

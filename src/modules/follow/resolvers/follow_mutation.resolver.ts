@@ -22,4 +22,10 @@ export class FollowMutationResolver {
   async UnFollowUser(@CurrentUser() user: User, @Args('id') id: number) {
     return await this.followService.unFollowUser(user.id, id);
   }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => Boolean)
+  async handleFollowRequest(@Args("userId") userId: number, @CurrentUser() me: User, @Args("accept") accept: boolean) {
+    return await this.followService.handleFollowRequest(userId, me.id, accept)
+  }
 }

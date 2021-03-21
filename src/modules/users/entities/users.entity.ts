@@ -38,6 +38,9 @@ export class User implements Node {
   @Column({ default: true })
   isNew: boolean;
 
+  @Column("text", { array: true, default: "{}" })
+  blocked: number[]
+
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
@@ -46,7 +49,7 @@ export class User implements Node {
 }
 
 @ObjectType()
-export class UserConnection extends PaginationBase(User) {}
+export class UserConnection extends PaginationBase(User) { }
 
 @ObjectType()
 export class FrequentUser extends User {

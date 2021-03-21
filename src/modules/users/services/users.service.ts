@@ -1,18 +1,16 @@
 /* eslint-disable security/detect-object-injection */
 import { Injectable } from '@nestjs/common';
-import { DeepPartial, getManager, getRepository } from 'typeorm';
+import { DeepPartial } from 'typeorm';
 import { UserRepository } from '../repositories/users.repository';
-import { AppRoles, User, UserConnection } from '../entities/users.entity';
-import bcrypt from 'bcryptjs';
+import { User, UserConnection } from '../entities/users.entity';
 import { errorName } from 'src/errors';
-import { HandlebarsAdapter } from 'src/modules/template/adapters/handlebars';
 import { createPaginationObject } from 'src/modules/common/common.repository';
-import { UserActiveEnum } from 'src/graphql/enums/users/user_active.enum';
 import { ApolloError } from 'apollo-server';
 import { FollowService } from 'src/modules/follow/services/follow.service';
+
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) {}
+  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) { }
 
   create = (data: DeepPartial<User>) => {
     try {
@@ -91,4 +89,28 @@ export class UsersService {
       throw new Error(error.message);
     }
   };
+
+  blockUser = async (userId: number, blockerId: number) => {
+    try {
+      const blockerInfo = await this.userRepository.findOne(blockerId)
+      if (!blockerInfo) throw new Error("Not found")
+      blockerInfo.blocked.push(userId)
+      await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
+      return blockerInfo
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+
+  unBlockUser = async (userId: number, blockerId: number) => {
+    try {
+      const blockerInfo = await this.userRepository.findOne(blockerId)
+      if (!blockerInfo) throw new Error("Not found")
+      blockerInfo.blocked.filter(item => item !== userId)
+      await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
+      return blockerInfo
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
 }

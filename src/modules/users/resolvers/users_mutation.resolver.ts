@@ -14,4 +14,16 @@ export class UsersMutationResolver {
   async updateUserInfo(@CurrentUser() user: User, @Args('input') input: UpdateUserInput): Promise<User | undefined> {
     return await this.userService.update(user.id, input);
   }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => User)
+  async blockUser(@Args("id") id: number, @CurrentUser() user: User) {
+    return await this.userService.blockUser(id, user.id)
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => User)
+  async unBlockUser(@Args("id") id: number, @CurrentUser() user: User) {
+    return await this.userService.blockUser(id, user.id)
+  }
 }

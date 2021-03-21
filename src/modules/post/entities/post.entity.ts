@@ -41,4 +41,4 @@ export class Post extends BaseEntity implements Node {
 }
 
 @ObjectType()
-export class PostConnection extends PaginationBase(Post) {}
+export class PostConnection extends PaginationBase(Post) { }

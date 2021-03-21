@@ -13,7 +13,7 @@ export class UsersQueryResolver {
     private readonly userService: UsersService,
     private readonly userDataLoader: UserDataLoader,
     private readonly mediaService: MediaService,
-  ) {}
+  ) { }
 
   @Query(() => User, {
     name: 'me',
@@ -45,5 +45,11 @@ export class UsersQueryResolver {
   @Query(() => Boolean)
   async isAvailable(@Args('nickname') nickname: string) {
     return await this.userService.isAvailable(nickname);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => [User], { nullable: true, defaultValue: [] })
+  async getBlockedUser(@CurrentUser() user: User) {
+    return await this.userDataLoader.loadMany(user.blocked)
   }
 }

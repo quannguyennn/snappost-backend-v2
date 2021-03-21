@@ -15,7 +15,7 @@ import { MediaModule } from '../media/media.module';
 @Module({
   imports: [
     UsersModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({ defaultStrategy: 'cookie' }),
     TypeOrmModule.forFeature([AuthRepository]),
     MediaModule
   ],
@@ -23,7 +23,6 @@ import { MediaModule } from '../media/media.module';
     //
     AuthService,
     //
-    // LocalStrategy,
     JwtStrategy,
     JwtCookieStrategy,
     //
