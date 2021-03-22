@@ -97,6 +97,7 @@ export class UsersService {
       blockerInfo.blocked.push(userId)
       await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
       await this.followService.unFollowUser(userId, blockerId)
+      await this.followService.unFollowUser(blockerId, userId)
       return blockerInfo
     } catch (error) {
       throw new Error(error.message)
@@ -107,8 +108,8 @@ export class UsersService {
     try {
       const blockerInfo = await this.userRepository.findOne(blockerId)
       if (!blockerInfo) throw new Error("Not found")
-      blockerInfo.blocked.filter(item => item !== userId)
-      await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
+      const temp = blockerInfo.blocked.filter(item => Number(item) !== userId)
+      await this.userRepository.update({ id: blockerId }, { ...blockerInfo, blocked: temp })
       return blockerInfo
     } catch (error) {
       throw new Error(error.message)

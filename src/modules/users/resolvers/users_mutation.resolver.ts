@@ -24,6 +24,6 @@ export class UsersMutationResolver {
   @UseGuards(GqlCookieAuthGuard)
   @Mutation(() => User)
   async unBlockUser(@Args("id") id: number, @CurrentUser() user: User) {
-    return await this.userService.blockUser(id, user.id)
+    return await this.userService.unBlockUser(id, user.id)
   }
 }
