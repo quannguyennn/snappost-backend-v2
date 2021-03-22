@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { async } from 'rxjs/internal/scheduler/async';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { FollowUserInput } from '../dtos/follow.input';
 import { Follow } from '../entities/follow.entity';

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { FollowService } from 'src/modules/follow/services/follow.service';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
 import { Post, PostConnection } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) {}
+  constructor(private readonly postRepository: PostRepository, private readonly followService: FollowService) { }
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
@@ -29,28 +29,26 @@ export class PostService {
     return true;
   };
 
-  getListPost = async (userId: number, page?: number, limit?: number): Promise<PostConnection> => {
+  getListPost = async (userId: number, page?: number, limit?: number, blocked?: number[]): Promise<PostConnection> => {
     page = page || 1;
     limit = limit || 15;
-    const listUserFollow = await this.followService.getListUserFollow(userId);
-    const [data, total] = await this.postRepository.findAndCount({
-      where: {
-        creatorId: In([
-          ...listUserFollow.map((user) => {
-            return user.followUser;
-          }),
-          userId,
-        ]),
-      },
-      skip: limit * (page - 1),
-      take: limit,
-      order: { createdAt: 'DESC' },
-    });
+    const listUserFollow = await this.followService.getFollowerUserId(userId);
+
+    const [data, total] = await this.postRepository.createQueryBuilder("post")
+      .where("post.creatorId IN (:...user)", { user: [...listUserFollow, userId] })
+      .andWhere(blocked?.length ? "post.creatorId NOT IN (:...blocked)" : "1=1", { blocked })
+      .limit(limit)
+      .offset((page - 1) * limit)
+      .orderBy("post.createdAt", "DESC")
+      .getManyAndCount()
     return createPaginationObject(data, total, page, limit);
   };
 
-  getExplorePost = async (limit: number, page: number) => {
+  getExplorePost = async (limit: number, page: number, blocked: number[]) => {
     const [items, total] = await this.postRepository.findAndCount({
+      where: blocked.length ? {
+        creatorId: Not(In(blocked))
+      } : {},
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: 'DESC' },

@@ -96,6 +96,7 @@ export class UsersService {
       if (!blockerInfo) throw new Error("Not found")
       blockerInfo.blocked.push(userId)
       await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
+      await this.followService.unFollowUser(userId, blockerId)
       return blockerInfo
     } catch (error) {
       throw new Error(error.message)

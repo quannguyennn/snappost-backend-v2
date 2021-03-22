@@ -15,13 +15,13 @@ export class PostQueryResolver {
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => PostConnection)
   async getNewFeed(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
-    return await this.postService.getListPost(user.id, args.page, args.limit);
+    return await this.postService.getListPost(user.id, args.page, args.limit, user.blocked);
   }
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => PostConnection)
-  async getExplorePost(@Args('limit') limit: number, @Args('page') page: number) {
-    return await this.postService.getExplorePost(limit, page);
+  async getExplorePost(@CurrentUser() user: User, @Args('limit') limit: number, @Args('page') page: number) {
+    return await this.postService.getExplorePost(limit, page, user.blocked);
   }
 
   @UseGuards(GqlCookieAuthGuard)

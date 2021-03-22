@@ -7,7 +7,6 @@ import { FollowService } from 'src/modules/follow/services/follow.service';
 import { MediaService } from 'src/modules/media/services/media.service';
 import { UserDataLoader } from '../dataloaders/users.dataloader';
 import { User } from '../entities/users.entity';
-import { UsersService } from '../services/users.service';
 
 @Resolver(() => User)
 export class UserFieldResolver {
