@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ApolloError } from 'apollo-server-errors';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
+import { createPaginationObject } from 'src/modules/common/common.repository';
 import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { FollowUserInput } from '../dtos/follow.input';
 import { Follow } from '../entities/follow.entity';
@@ -76,5 +78,23 @@ export class FollowService {
     } catch (error) {
       throw new Error(error.message);
     }
+  };
+
+  getFollowRequest = async (userId: number, limit: number, page: number) => {
+    try {
+      const [items, total] = await this.followRepository.findAndCount({
+        where: { followUser: userId, status: FollowStatus.WAITING },
+        take: limit,
+        skip: (page - 1) * limit,
+        order: { createdAt: 'DESC' },
+      });
+      return createPaginationObject(items, total, page, limit);
+    } catch (error) {
+      throw new ApolloError(error.message);
+    }
+  };
+
+  countFollowRequest = async (userId: number) => {
+    return await this.followRepository.count({ followUser: userId, status: FollowStatus.WAITING });
   };
 }
