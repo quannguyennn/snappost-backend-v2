@@ -6,6 +6,7 @@ import { pubSub } from 'src/helpers/pubsub';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { PostService } from 'src/modules/post/services/post.service';
+import { DeepPartial } from 'typeorm';
 import { CreateCommentInput, UpdateCommentInput } from '../dtos/comments.input';
 import { CommentConnection, Comments } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
@@ -16,15 +17,15 @@ export class CommentService {
     private readonly commentRepository: CommentRepository,
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
-  ) {}
+  ) { }
 
-  create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
-    const postInfo = await this.postService.findById(input.postId);
+  create = async (creatorId: number, input: DeepPartial<Comments>): Promise<Comments> => {
+    const postInfo = await this.postService.findById(input.postId ?? 0);
     if (!postInfo) throw new ApolloError('Not found');
 
     const newComment = this.commentRepository.create({ creatorId, ...input });
     const saveComment = await this.commentRepository.save(newComment);
-    await this.notificationService.create(creatorId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
+    await this.notificationService.create(creatorId, postInfo?.creatorId, EvenEnum.comment, `post-${postInfo?.id}`);
     void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: saveComment });
     return saveComment;
   };

@@ -16,7 +16,7 @@ export class Comments implements Node {
   @Column()
   creatorId: number;
 
-  @Column({ nullable: true })
+  @Column()
   postId: number;
 
   @Column()
@@ -42,4 +42,4 @@ export class CommentDeletePayload {
 }
 
 @ObjectType()
-export class CommentConnection extends PaginationBase(Comments) {}
+export class CommentConnection extends PaginationBase(Comments) { }
