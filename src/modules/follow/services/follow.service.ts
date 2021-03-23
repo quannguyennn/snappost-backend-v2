@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
+import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
+import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { FollowUserInput } from '../dtos/follow.input';
 import { Follow } from '../entities/follow.entity';
 import { FollowRepository } from '../repositories/follow.repository';
 
 @Injectable()
 export class FollowService {
-  constructor(private readonly followRepository: FollowRepository) { }
+  constructor(
+    private readonly followRepository: FollowRepository,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   checkFollowStatus = async (creatorId: number, followUser: number): Promise<FollowStatus | undefined> => {
     const follow = await this.followRepository.findOne({ creatorId, followUser });
@@ -41,6 +46,7 @@ export class FollowService {
   followUser = async (creatorId: number, input: FollowUserInput): Promise<boolean> => {
     const newFollowRequest = this.followRepository.create({ creatorId, ...input });
     await this.followRepository.save(newFollowRequest);
+    await this.notificationService.create(creatorId, input.followUser, EvenEnum.follow, `user-${creatorId}`);
     return true;
   };
 
@@ -54,16 +60,21 @@ export class FollowService {
 
   handleFollowRequest = async (creatorId: number, followeeId: number, accept: boolean) => {
     try {
-      const follow = await this.followRepository.findOne({ creatorId, followUser: followeeId, status: FollowStatus.WAITING })
-      if (!follow) throw new Error("not found")
+      const follow = await this.followRepository.findOne({
+        creatorId,
+        followUser: followeeId,
+        status: FollowStatus.WAITING,
+      });
+      if (!follow) throw new Error('not found');
       if (accept) {
-        await this.followRepository.update({ id: follow.id }, { status: FollowStatus.ACCEPT })
+        await this.followRepository.update({ id: follow.id }, { status: FollowStatus.ACCEPT });
+        await this.notificationService.create(followeeId, creatorId, EvenEnum.acceptFollow, `user-${followeeId}`);
       } else {
-        await this.followRepository.delete({ id: follow.id })
+        await this.followRepository.delete({ id: follow.id });
       }
-      return accept
+      return accept;
     } catch (error) {
       throw new Error(error.message);
     }
-  }
+  };
 }

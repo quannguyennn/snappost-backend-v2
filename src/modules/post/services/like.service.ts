@@ -1,11 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { ApolloError } from 'apollo-server-errors';
+import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
 import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
 import { pubSub } from 'src/helpers/pubsub';
+import { NotificationService } from 'src/modules/notifications/services/notification.service';
+import { PostService } from 'src/modules/post/services/post.service';
 import { LikeRepository } from '../repositories/like.repository';
 
 @Injectable()
 export class LikeService {
-  constructor(private readonly likeRepository: LikeRepository) {}
+  constructor(
+    private readonly likeRepository: LikeRepository,
+    private readonly notificationService: NotificationService,
+    private readonly postService: PostService,
+  ) {}
 
   countPostLike = async (postId: number): Promise<number> => {
     return await this.likeRepository.count({ postId });
@@ -18,9 +26,12 @@ export class LikeService {
 
   reactToPost = async (userId: number, postId: number) => {
     const reaction = await this.likeRepository.findOne({ userId, postId });
+    const postInfo = await this.postService.findById(userId);
+    if (!postInfo) throw new ApolloError('Not found');
     if (!reaction) {
       const newReact = this.likeRepository.create({ userId, postId });
       const savedReact = await this.likeRepository.save(newReact);
+      await this.notificationService.create(userId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
       void pubSub.publish(PubsubEventEnum.onLikePost, { onLikePost: savedReact });
     } else {
       void pubSub.publish(PubsubEventEnum.onUnLikePost, { onUnLikePost: reaction });

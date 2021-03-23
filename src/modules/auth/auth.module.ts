@@ -1,4 +1,4 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, forwardRef } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,10 +14,10 @@ import { MediaModule } from '../media/media.module';
 
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     PassportModule.register({ defaultStrategy: 'cookie' }),
     TypeOrmModule.forFeature([AuthRepository]),
-    MediaModule
+    forwardRef(() => MediaModule),
   ],
   providers: [
     //

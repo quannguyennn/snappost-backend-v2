@@ -1,18 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { ApolloError } from 'apollo-server-errors';
+import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
 import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
 import { pubSub } from 'src/helpers/pubsub';
 import { createPaginationObject } from 'src/modules/common/common.repository';
+import { NotificationService } from 'src/modules/notifications/services/notification.service';
+import { PostService } from 'src/modules/post/services/post.service';
 import { CreateCommentInput, UpdateCommentInput } from '../dtos/comments.input';
 import { CommentConnection, Comments } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
 
 @Injectable()
 export class CommentService {
-  constructor(private readonly commentRepository: CommentRepository) {}
+  constructor(
+    private readonly commentRepository: CommentRepository,
+    private readonly notificationService: NotificationService,
+    private readonly postService: PostService,
+  ) {}
 
   create = async (creatorId: number, input: CreateCommentInput): Promise<Comments> => {
+    const postInfo = await this.postService.findById(input.postId);
+    if (!postInfo) throw new ApolloError('Not found');
+
     const newComment = this.commentRepository.create({ creatorId, ...input });
     const saveComment = await this.commentRepository.save(newComment);
+    await this.notificationService.create(creatorId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
     void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: saveComment });
     return saveComment;
   };

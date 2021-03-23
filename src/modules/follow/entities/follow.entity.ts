@@ -1,16 +1,7 @@
 import { ObjectType } from '@nestjs/graphql';
 import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { PaginationBase, Node } from 'src/graphql/types/common.interface.entity';
-import { snowflake } from 'src/helpers/common';
-import {
-  BaseEntity,
-  Column,
-  CreateDateColumn,
-  DeepPartial,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @ObjectType('Follow', {
   implements: [Node],

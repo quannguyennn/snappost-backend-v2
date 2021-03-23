@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { NotificationModule } from 'src/modules/notifications/notification.module';
 import { Report } from 'src/modules/post/entities/report.entity';
 import { ReportRepository } from 'src/modules/post/repositories/report.repository';
 import { LikeFieldResolver } from 'src/modules/post/resolvers/likes/like_field.resolver';
@@ -28,6 +29,7 @@ import { PostService } from './services/post.service';
     forwardRef(() => FollowModule),
     forwardRef(() => UsersModule),
     forwardRef(() => MediaModule),
+    forwardRef(() => NotificationModule),
   ],
   providers: [
     PostMutationResolver,

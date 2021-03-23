@@ -7,6 +7,7 @@ import { Comments } from './modules/comment/entities/comment.entity';
 import { Follow } from './modules/follow/entities/follow.entity';
 import { Like } from './modules/post/entities/like.entity';
 import { Report } from 'src/modules/post/entities/report.entity';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -17,5 +18,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DATABASE_NAME,
   synchronize: process.env.DATABASE_SYNC === 'true',
   logging: process.env.DATABASE_LOGGING === 'true',
-  entities: [User, MediaEntity, AuthTokenEntity, Like, Post, Comments, Follow, Report],
+  entities: [User, MediaEntity, AuthTokenEntity, Like, Post, Comments, Follow, Report, Notification],
 };

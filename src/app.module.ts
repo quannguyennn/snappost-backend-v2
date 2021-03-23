@@ -11,6 +11,7 @@ import { typeORMConfig } from './typeorm.config';
 import { TemplateModule } from './modules/template/template.module';
 import { PostModule } from './modules/post/post.module';
 import { FollowModule } from './modules/follow/follow.module';
+import { NotificationModule } from 'src/modules/notifications/notification.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -34,6 +35,7 @@ import { FollowModule } from './modules/follow/follow.module';
     UsersModule,
     PostModule,
     FollowModule,
+    NotificationModule,
   ],
   // providers: [JSONObjectScalar],
   controllers: [AppController],
