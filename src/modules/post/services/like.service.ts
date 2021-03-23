@@ -26,7 +26,7 @@ export class LikeService {
 
   reactToPost = async (userId: number, postId: number) => {
     const reaction = await this.likeRepository.findOne({ userId, postId });
-    const postInfo = await this.postService.findById(userId);
+    const postInfo = await this.postService.findById(postId);
     if (!postInfo) throw new ApolloError('Not found');
     if (!reaction) {
       const newReact = this.likeRepository.create({ userId, postId });
