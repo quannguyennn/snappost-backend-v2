@@ -40,8 +40,8 @@ export class FollowService {
     return followingUser.map((item) => item.followUser);
   };
 
-  getFollowerUserId = async (followUser: number): Promise<number[]> => {
-    const followingUser = await this.followRepository.find({ where: { followUser, status: FollowStatus.ACCEPT } });
+  getFollowerUserId = async (creatorId: number): Promise<number[]> => {
+    const followingUser = await this.followRepository.find({ where: { creatorId, status: FollowStatus.ACCEPT } });
     return followingUser.map((item) => item.followUser);
   };
 

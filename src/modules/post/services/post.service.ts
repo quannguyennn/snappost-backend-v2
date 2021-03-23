@@ -37,7 +37,6 @@ export class PostService {
     page = page || 1;
     limit = limit || 15;
     const listUserFollow = await this.followService.getFollowerUserId(userId);
-
     const [data, total] = await this.postRepository
       .createQueryBuilder('post')
       .where('post.creatorId IN (:...user)', { user: [...listUserFollow, userId] })
