@@ -5,6 +5,7 @@ import { FollowStatus } from 'src/graphql/enums/follow/follow_status.enum';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { FollowService } from 'src/modules/follow/services/follow.service';
 import { MediaService } from 'src/modules/media/services/media.service';
+import { UsersService } from 'src/modules/users/services/users.service';
 import { UserDataLoader } from '../dataloaders/users.dataloader';
 import { User } from '../entities/users.entity';
 
@@ -14,7 +15,8 @@ export class UserFieldResolver {
     private readonly mediaService: MediaService,
     private readonly followService: FollowService,
     private readonly userDataloader: UserDataLoader,
-  ) { }
+    private readonly userService: UsersService,
+  ) {}
 
   @ResolveField(() => String, { nullable: true })
   async avatarFilePath(@Parent() user: User): Promise<string | undefined> {
@@ -25,14 +27,25 @@ export class UserFieldResolver {
   @UseGuards(GqlCookieAuthGuard)
   @ResolveField(() => Boolean)
   async isRequestFollowMe(@CurrentUser() me: User, @Parent() user: User) {
-    if (me.id === user.id) return false
+    if (me.id === user.id) return false;
     else {
       const followStatus = await this.followService.checkFollowStatus(user.id, me.id);
       if (followStatus === FollowStatus.WAITING) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
+    }
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @ResolveField(() => Boolean)
+  async isBlockMe(@CurrentUser() me: User, @Parent() user: User) {
+    if (me.id === user.id) return false;
+    else {
+      const userBlockMe = await this.userService.getPeopleBlockUserId(me.id);
+
+      return userBlockMe.includes(user.id);
     }
   }
 

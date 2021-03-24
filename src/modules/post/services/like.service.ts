@@ -31,7 +31,9 @@ export class LikeService {
     if (!reaction) {
       const newReact = this.likeRepository.create({ userId, postId });
       const savedReact = await this.likeRepository.save(newReact);
-      await this.notificationService.create(userId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
+      if (userId !== postInfo.creatorId) {
+        await this.notificationService.create(userId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
+      }
       void pubSub.publish(PubsubEventEnum.onLikePost, { onLikePost: savedReact });
     } else {
       void pubSub.publish(PubsubEventEnum.onUnLikePost, { onUnLikePost: reaction });

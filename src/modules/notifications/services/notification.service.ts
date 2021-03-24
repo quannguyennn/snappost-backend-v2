@@ -27,10 +27,28 @@ export class NotificationService {
         content = `mentioned you in a post`;
       }
 
-      const newNotification = this.notiRepo.create({ triggerId, userId, content, link });
-      const savedNoti = await this.notiRepo.save(newNotification);
-      void pubSub.publish(PubsubEventEnum.onNewNotification, { onNewNotification: savedNoti });
-      return savedNoti;
+      const [, id] = link.split('-');
+
+      const oldNotification = await this.notiRepo.findOne({
+        triggerId,
+        userId,
+        content,
+        link,
+        type: event,
+        resourceId: id,
+      });
+
+      if (oldNotification) {
+        await this.notiRepo.update({ id: oldNotification.id }, { ...oldNotification });
+        const updated = await this.notiRepo.findOne({ triggerId, userId, content, link, type: event, resourceId: id });
+        void pubSub.publish(PubsubEventEnum.onNewNotification, { onNewNotification: updated });
+        return updated;
+      } else {
+        const newNotification = this.notiRepo.create({ triggerId, userId, content, link, type: event, resourceId: id });
+        const savedNoti = await this.notiRepo.save(newNotification);
+        void pubSub.publish(PubsubEventEnum.onNewNotification, { onNewNotification: savedNoti });
+        return savedNoti;
+      }
     } catch (error) {
       throw new ApolloError(error.message);
     }
@@ -41,7 +59,7 @@ export class NotificationService {
       where: { userId },
       skip: (page - 1) * limit,
       take: limit,
-      order: { createdAt: 'DESC' },
+      order: { updatedAt: 'DESC' },
     });
     return createPaginationObject(items, total, page, limit);
   };

@@ -10,7 +10,7 @@ import { FollowService } from 'src/modules/follow/services/follow.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) { }
+  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) {}
 
   create = (data: DeepPartial<User>) => {
     try {
@@ -22,7 +22,7 @@ export class UsersService {
   };
 
   update = async (userId: number, data: DeepPartial<User>): Promise<User | undefined> => {
-    await this.userRepository.update(userId, data);
+    await this.userRepository.update(userId, { ...data });
     return this.userRepository.findOneOrFail(userId);
   };
 
@@ -57,18 +57,20 @@ export class UsersService {
     page: number,
   ): Promise<UserConnection> => {
     try {
+      const blockUser = await this.getPeopleBlockUserId(userId);
       const query = this.userRepository
         .createQueryBuilder('user')
-        .where('user.name ILIKE :name OR user.nickname ILIKE :nickname', {
+        .where('(user.name ILIKE :name OR user.nickname ILIKE :nickname)', {
           name: `%${keyword}%`,
           nickname: `%${keyword}%`,
         });
+      if (blockUser.length)
+        query.andWhere('user.id NOT IN (:...blockedUser)', { blockedUser: await this.getPeopleBlockUserId(userId) });
+
       if (isRestriced) {
         const followingUser = await this.followService.getFollowingUserId(userId);
         if (followingUser.length) {
           query.andWhere('user.id IN (:...userIds)', { userIds: followingUser });
-        } else {
-          query.andWhere('user.id < 0');
         }
       }
       const [items, total] = await query
@@ -92,27 +94,36 @@ export class UsersService {
 
   blockUser = async (userId: number, blockerId: number) => {
     try {
-      const blockerInfo = await this.userRepository.findOne(blockerId)
-      if (!blockerInfo) throw new Error("Not found")
-      blockerInfo.blocked.push(userId)
-      await this.userRepository.update({ id: blockerId }, { ...blockerInfo })
-      await this.followService.unFollowUser(userId, blockerId)
-      await this.followService.unFollowUser(blockerId, userId)
-      return blockerInfo
+      const blockerInfo = await this.userRepository.findOne(blockerId);
+      if (!blockerInfo) throw new Error('Not found');
+      blockerInfo.blocked.push(userId);
+      await this.userRepository.update({ id: blockerId }, { ...blockerInfo });
+      await this.followService.unFollowUser(userId, blockerId);
+      await this.followService.unFollowUser(blockerId, userId);
+      return blockerInfo;
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
-  }
+  };
 
   unBlockUser = async (userId: number, blockerId: number) => {
     try {
-      const blockerInfo = await this.userRepository.findOne(blockerId)
-      if (!blockerInfo) throw new Error("Not found")
-      const temp = blockerInfo.blocked.filter(item => Number(item) !== userId)
-      await this.userRepository.update({ id: blockerId }, { ...blockerInfo, blocked: temp })
-      return blockerInfo
+      const blockerInfo = await this.userRepository.findOne(blockerId);
+      if (!blockerInfo) throw new Error('Not found');
+      const temp = blockerInfo.blocked.filter((item) => Number(item) !== userId);
+      await this.userRepository.update({ id: blockerId }, { ...blockerInfo, blocked: temp });
+      return blockerInfo;
     } catch (error) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
-  }
+  };
+
+  getPeopleBlockUserId = async (userId: number) => {
+    const blockUser = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.blocked && ARRAY[:...userId]', { userId: [userId] })
+      .getMany();
+
+    return blockUser.map((item) => item.id);
+  };
 }

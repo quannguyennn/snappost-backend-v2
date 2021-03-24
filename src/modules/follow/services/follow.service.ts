@@ -48,7 +48,9 @@ export class FollowService {
   followUser = async (creatorId: number, input: FollowUserInput): Promise<boolean> => {
     const newFollowRequest = this.followRepository.create({ creatorId, ...input });
     await this.followRepository.save(newFollowRequest);
-    await this.notificationService.create(creatorId, input.followUser, EvenEnum.follow, `user-${creatorId}`);
+    if (creatorId !== input.followUser) {
+      await this.notificationService.create(creatorId, input.followUser, EvenEnum.follow, `user-${creatorId}`);
+    }
     return true;
   };
 
@@ -70,7 +72,9 @@ export class FollowService {
       if (!follow) throw new Error('not found');
       if (accept) {
         await this.followRepository.update({ id: follow.id }, { status: FollowStatus.ACCEPT });
-        await this.notificationService.create(followeeId, creatorId, EvenEnum.acceptFollow, `user-${followeeId}`);
+        if (followeeId !== creatorId) {
+          await this.notificationService.create(followeeId, creatorId, EvenEnum.acceptFollow, `user-${followeeId}`);
+        }
       } else {
         await this.followRepository.delete({ id: follow.id });
       }

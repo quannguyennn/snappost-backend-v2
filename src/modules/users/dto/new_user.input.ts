@@ -1,10 +1,9 @@
 import { Field, Int, InputType, PartialType } from '@nestjs/graphql';
-import { AppRoles } from 'src/graphql/enums/roles.type';
 
 @InputType()
 export class NewUserInput {
   @Field()
-  zaloId?: string
+  zaloId?: string;
 
   @Field()
   name?: string;
@@ -12,7 +11,7 @@ export class NewUserInput {
   @Field()
   nickname?: string;
 
-  @Field({ defaultValue: "" })
+  @Field({ defaultValue: '' })
   intro?: string;
 
   @Field()
@@ -22,8 +21,8 @@ export class NewUserInput {
   avatarUrl?: string;
 
   @Field({ defaultValue: true })
-  isNew?: boolean
+  isNew?: boolean;
 }
 
 @InputType()
-export class UpdateUserInput extends PartialType(NewUserInput) { }
+export class UpdateUserInput extends PartialType(NewUserInput) {}
