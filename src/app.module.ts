@@ -12,6 +12,7 @@ import { TemplateModule } from './modules/template/template.module';
 import { PostModule } from './modules/post/post.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { NotificationModule } from 'src/modules/notifications/notification.module';
+import { ChatModule } from 'src/modules/chat/chat.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -36,6 +37,7 @@ import { NotificationModule } from 'src/modules/notifications/notification.modul
     PostModule,
     FollowModule,
     NotificationModule,
+    ChatModule,
   ],
   // providers: [JSONObjectScalar],
   controllers: [AppController],

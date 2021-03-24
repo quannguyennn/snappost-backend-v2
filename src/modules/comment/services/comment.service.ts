@@ -6,7 +6,9 @@ import { pubSub } from 'src/helpers/pubsub';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { PostService } from 'src/modules/post/services/post.service';
-import { DeepPartial } from 'typeorm';
+import { User } from 'src/modules/users/entities/users.entity';
+import { UsersService } from 'src/modules/users/services/users.service';
+import { DeepPartial, In, Not } from 'typeorm';
 import { CreateCommentInput, UpdateCommentInput } from '../dtos/comments.input';
 import { CommentConnection, Comments } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
@@ -17,6 +19,7 @@ export class CommentService {
     private readonly commentRepository: CommentRepository,
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
+    private readonly userSerivce: UsersService,
   ) {}
 
   create = async (creatorId: number, input: DeepPartial<Comments>): Promise<Comments> => {
@@ -43,9 +46,12 @@ export class CommentService {
     return true;
   };
 
-  findPostComments = async (id: number, limit: number, page: number): Promise<CommentConnection> => {
+  findPostComments = async (id: number, limit: number, page: number, user: User): Promise<CommentConnection> => {
+    const userBlockMe = await this.userSerivce.getPeopleBlockUserId(user.id);
+    const blacklist = [...user.blocked, ...userBlockMe];
+
     const [items, total] = await this.commentRepository.findAndCount({
-      where: { postId: id },
+      where: blacklist.length ? { postId: id, creatorId: Not(In(blacklist)) } : { postId: id },
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: 'DESC' },

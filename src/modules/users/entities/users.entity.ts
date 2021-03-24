@@ -41,6 +41,9 @@ export class User implements Node {
   @Column('text', { array: true, default: '{}' })
   blocked: number[];
 
+  @Column({ nullable: true })
+  lastSeen?: Date;
+
   @CreateDateColumn({ name: 'createdAt' })
   createdAt: Date;
 
