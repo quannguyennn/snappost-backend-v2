@@ -6,14 +6,15 @@ import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { UserDataLoader } from '../dataloaders/users.dataloader';
 import { MediaService } from 'src/modules/media/services/media.service';
 import { CurrentUser } from 'src/decorators/common.decorator';
+import { FollowService } from 'src/modules/follow/services/follow.service';
 
 @Resolver(() => User)
 export class UsersQueryResolver {
   constructor(
     private readonly userService: UsersService,
     private readonly userDataLoader: UserDataLoader,
-    private readonly mediaService: MediaService,
-  ) { }
+    private readonly followService: FollowService,
+  ) {}
 
   @Query(() => User, {
     name: 'me',
@@ -50,6 +51,14 @@ export class UsersQueryResolver {
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => [User], { nullable: true, defaultValue: [] })
   async getBlockedUser(@CurrentUser() user: User) {
-    return await this.userDataLoader.loadMany(user.blocked)
+    return await this.userDataLoader.loadMany(user.blocked);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => [User])
+  async getFollowingUser(@CurrentUser() user: User) {
+    const following = await this.followService.getListUserFollow(user.id);
+    const userId = following.map((item) => item.followUser);
+    return await this.userDataLoader.loadMany(userId);
   }
 }
