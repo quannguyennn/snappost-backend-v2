@@ -3,7 +3,6 @@ import { FilterInput, SortInput } from 'src/graphql/types/common.input';
 // import { FilterOperatorTypeEnum } from 'src/graphql/enums/filter_operator_type';
 
 export const generateQueryByFilter = (filters?: FilterInput[]) => {
-  console.log(filters);
   const where = {};
   filters?.map((filter) => {
     switch (filter.operator) {
@@ -41,7 +40,6 @@ export const generateQueryByFilter = (filters?: FilterInput[]) => {
     }
     return true;
   });
-  console.log(where);
   return where;
 };
 

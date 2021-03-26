@@ -6,6 +6,7 @@ export enum PubsubEventEnum {
   onLikePost = 'onLikePost',
   onUnLikePost = 'onUnLikePost',
   onNewNotification = 'onNewNotification',
+  onNewMessage = 'onNewMessage',
 }
 
 registerEnumType(PubsubEventEnum, {

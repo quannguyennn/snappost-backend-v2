@@ -13,6 +13,7 @@ import { MessageMutationResolver } from 'src/modules/chat/resolvers/messages/mes
 import { MessageQueryResolver } from 'src/modules/chat/resolvers/messages/message_query.resolver';
 import { MessageSubscriptionResolver } from 'src/modules/chat/resolvers/messages/message_subscription.resolver';
 import { ChatService } from 'src/modules/chat/services/chat.service';
+import { MessageService } from 'src/modules/chat/services/message.service';
 import { UsersModule } from 'src/modules/users/users.module';
 
 @Module({
@@ -30,7 +31,8 @@ import { UsersModule } from 'src/modules/users/users.module';
     MesageFieldResolver,
     MessageSubscriptionResolver,
     MessageDataloader,
+    MessageService,
   ],
-  exports: [ChatService, MessageDataloader],
+  exports: [ChatService, MessageDataloader, MessageService],
 })
 export class ChatModule {}

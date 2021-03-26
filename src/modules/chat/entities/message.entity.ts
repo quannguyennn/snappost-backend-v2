@@ -23,10 +23,10 @@ export class Message implements Node {
   content: string;
 
   @Column({ nullable: true })
-  media: string;
+  media?: string;
 
   @Column({ nullable: true, enum: MediaType })
-  mediaType: MediaType;
+  mediaType?: MediaType;
 
   @Column({ default: false })
   isRead: boolean;
