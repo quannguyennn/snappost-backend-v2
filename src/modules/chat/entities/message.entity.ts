@@ -19,8 +19,8 @@ export class Message implements Node {
   @Column()
   chatId: number;
 
-  @Column()
-  content: string;
+  @Column({ nullable: true })
+  content?: string;
 
   @Column({ nullable: true })
   media?: string;
@@ -29,11 +29,14 @@ export class Message implements Node {
   mediaType?: MediaType;
 
   @Column({ default: false })
-  isRead: boolean;
+  sent: boolean;
+
+  @Column({ default: false })
+  received: boolean
 
   @CreateDateColumn()
   createdAt: Date;
 }
 
 @ObjectType()
-export class MessageConnection extends PaginationBase(Message) {}
+export class MessageConnection extends PaginationBase(Message) { }

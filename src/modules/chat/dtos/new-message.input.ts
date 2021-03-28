@@ -3,8 +3,8 @@ import { MediaType } from 'src/graphql/enums/chat/media-type.enum';
 
 @InputType()
 export class NewMessageInput {
-  @Field()
-  content: string;
+  @Field({ nullable: true })
+  content?: string;
 
   @Field()
   chatId: number;
