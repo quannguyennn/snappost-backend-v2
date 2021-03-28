@@ -33,6 +33,9 @@ export class Post extends BaseEntity implements Node {
   @Column({ nullable: true, default: '' })
   rawCaption?: string;
 
+  @Column({ default: 0 })
+  actualLike: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

@@ -13,7 +13,7 @@ export class LikeService {
     private readonly likeRepository: LikeRepository,
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
-  ) {}
+  ) { }
 
   countPostLike = async (postId: number): Promise<number> => {
     return await this.likeRepository.count({ postId });
@@ -31,13 +31,15 @@ export class LikeService {
     if (!reaction) {
       const newReact = this.likeRepository.create({ userId, postId });
       const savedReact = await this.likeRepository.save(newReact);
-      if (userId !== postInfo.creatorId) {
+      if (Number(userId) !== Number(postInfo.creatorId)) {
         await this.notificationService.create(userId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
       }
       void pubSub.publish(PubsubEventEnum.onLikePost, { onLikePost: savedReact });
+      await this.postService.update({ id: postInfo.id, actualLike: postInfo.actualLike + 1 })
     } else {
       void pubSub.publish(PubsubEventEnum.onUnLikePost, { onUnLikePost: reaction });
       await this.likeRepository.delete(reaction.id);
+      await this.postService.update({ id: postInfo.id, actualLike: postInfo.actualLike - 1 })
     }
     return reaction ? false : true;
   };

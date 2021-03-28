@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ApolloError } from 'apollo-server';
+import moment from 'moment';
 import { Message } from 'src/modules/chat/entities/message.entity';
 import { ChatRepository } from 'src/modules/chat/repositories/chat.repository';
 import { createPaginationObject } from 'src/modules/common/common.repository';
+import { MoreThan } from 'typeorm';
 
 @Injectable()
 export class ChatService {
@@ -86,4 +88,12 @@ export class ChatService {
       throw new Error(error.message);
     }
   };
+
+  clearTempChat = async () => {
+    try {
+      await this.chatRepository.delete({ isTemp: true, createdAt: MoreThan(moment().subtract(30, "minutes").toDate()) })
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
 }

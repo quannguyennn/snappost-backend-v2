@@ -13,6 +13,7 @@ import { PostModule } from './modules/post/post.module';
 import { FollowModule } from './modules/follow/follow.module';
 import { NotificationModule } from 'src/modules/notifications/notification.module';
 import { ChatModule } from 'src/modules/chat/chat.module';
+import { CronModule } from './modules/cron/cron.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -38,9 +39,10 @@ import { ChatModule } from 'src/modules/chat/chat.module';
     FollowModule,
     NotificationModule,
     ChatModule,
+    CronModule
   ],
   // providers: [JSONObjectScalar],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
