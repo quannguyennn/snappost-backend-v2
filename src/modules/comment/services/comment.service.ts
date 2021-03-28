@@ -20,7 +20,7 @@ export class CommentService {
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
     private readonly userSerivce: UsersService,
-  ) {}
+  ) { }
 
   create = async (creatorId: number, input: DeepPartial<Comments>): Promise<Comments> => {
     const postInfo = await this.postService.findById(input.postId ?? 0);
@@ -28,7 +28,7 @@ export class CommentService {
 
     const newComment = this.commentRepository.create({ creatorId, ...input });
     const saveComment = await this.commentRepository.save(newComment);
-    if (creatorId !== postInfo.creatorId) {
+    if (Number(creatorId) !== Number(postInfo.creatorId)) {
       await this.notificationService.create(creatorId, postInfo?.creatorId, EvenEnum.comment, `post-${postInfo?.id}`);
     }
     void pubSub.publish(PubsubEventEnum.onCreateComment, { onCreateComment: saveComment });

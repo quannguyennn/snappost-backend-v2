@@ -13,7 +13,7 @@ export class FollowService {
   constructor(
     private readonly followRepository: FollowRepository,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   checkFollowStatus = async (creatorId: number, followUser: number): Promise<FollowStatus | undefined> => {
     const follow = await this.followRepository.findOne({ creatorId, followUser });
@@ -48,7 +48,7 @@ export class FollowService {
   followUser = async (creatorId: number, input: FollowUserInput): Promise<boolean> => {
     const newFollowRequest = this.followRepository.create({ creatorId, ...input });
     await this.followRepository.save(newFollowRequest);
-    if (creatorId !== input.followUser) {
+    if (Number(creatorId) !== Number(input.followUser)) {
       await this.notificationService.create(creatorId, input.followUser, EvenEnum.follow, `user-${creatorId}`);
     }
     return true;
@@ -72,7 +72,7 @@ export class FollowService {
       if (!follow) throw new Error('not found');
       if (accept) {
         await this.followRepository.update({ id: follow.id }, { status: FollowStatus.ACCEPT });
-        if (followeeId !== creatorId) {
+        if (Number(followeeId) !== Number(creatorId)) {
           await this.notificationService.create(followeeId, creatorId, EvenEnum.acceptFollow, `user-${followeeId}`);
         }
       } else {
