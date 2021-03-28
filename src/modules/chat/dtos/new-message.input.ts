@@ -14,4 +14,7 @@ export class NewMessageInput {
 
   @Field(() => MediaType, { nullable: true })
   mediaType?: MediaType;
+
+  @Field()
+  tempId: string;
 }

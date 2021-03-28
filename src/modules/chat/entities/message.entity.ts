@@ -31,6 +31,9 @@ export class Message implements Node {
   @Column({ default: false })
   sent: boolean;
 
+  @Column({ nullable: true })
+  tempId: string;
+
   @Column({ default: false })
   received: boolean
 
