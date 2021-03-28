@@ -9,7 +9,7 @@ import { User } from 'src/modules/users/entities/users.entity';
 
 @Resolver(() => Message)
 export class MessageMutationResolver {
-  constructor(private readonly messageService: MessageService) {}
+  constructor(private readonly messageService: MessageService) { }
 
   @UseGuards(GqlCookieAuthGuard)
   @Mutation(() => Message)

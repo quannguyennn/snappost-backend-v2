@@ -1,11 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { ApolloError } from 'apollo-server';
 import { Message } from 'src/modules/chat/entities/message.entity';
 import { ChatRepository } from 'src/modules/chat/repositories/chat.repository';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 
 @Injectable()
 export class ChatService {
-  constructor(private readonly chatRepository: ChatRepository) {}
+  constructor(private readonly chatRepository: ChatRepository) { }
+
+  findById = async (id: number) => {
+    try {
+      return await this.chatRepository.findOne({ id })
+    } catch (error) {
+      throw new ApolloError(error.message)
+    }
+  }
+
+  countUnseenMessageOfChat = async (userId: number, chatId: number) => {
+    try {
+      const a = await this.chatRepository.createQueryBuilder("chat")
+        .innerJoin(Message, "mess", "mess.chatId = chat.id")
+        .andWhere("(mess.sender != :userId AND mess.received = false)", { userId })
+        .andWhere("chat.id = :chatId", { chatId })
+        .getMany()
+      console.log(a)
+      return 1
+    } catch (error) {
+      throw new ApolloError(error.message)
+    }
+  }
 
   getChats = async (userId: number, limit: number, page: number) => {
     try {
@@ -41,6 +64,19 @@ export class ChatService {
       throw new Error(error.message);
     }
   };
+
+  getChatHasUnseenMessage = async (userId: number) => {
+    try {
+      const chats = await this.chatRepository.createQueryBuilder("chat")
+        .innerJoin(Message, "mess", "mess.chatId = chat.id")
+        .where("chat.participants && ARRAY[:...users]", { users: [userId] })
+        .andWhere("(mess.sender != :userId AND mess.received = false)", { userId })
+        .getMany()
+      return chats.map(item => item.id)
+    } catch (error) {
+      throw new ApolloError(error.message)
+    }
+  }
 
   remove = async (id: number) => {
     try {

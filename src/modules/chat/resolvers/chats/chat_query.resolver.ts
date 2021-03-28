@@ -8,7 +8,7 @@ import { User } from 'src/modules/users/entities/users.entity';
 
 @Resolver(() => Chat)
 export class ChatQueryResolver {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) { }
 
   @UseGuards(GqlCookieAuthGuard)
   @Query(() => ChatConnection)
@@ -20,5 +20,11 @@ export class ChatQueryResolver {
   @Query(() => Chat, { nullable: true })
   async getExistChat(@Args({ name: 'participants', type: () => [Number] }) participants: number[]) {
     return await this.chatService.getExist(participants);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Query(() => [Number], { defaultValue: [] })
+  async getChatHasUnseenMessage(@CurrentUser() user: User) {
+    return await this.chatService.getChatHasUnseenMessage(user.id)
   }
 }

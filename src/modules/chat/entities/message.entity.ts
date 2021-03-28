@@ -1,4 +1,4 @@
-import { ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { MediaType } from 'src/graphql/enums/chat/media-type.enum';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
@@ -43,3 +43,21 @@ export class Message implements Node {
 
 @ObjectType()
 export class MessageConnection extends PaginationBase(Message) { }
+
+@ObjectType()
+export class SeenMessage {
+  @Field()
+  chatId: number;
+
+  @Field()
+  userId: number;
+}
+
+@ObjectType()
+export class ReceivedMessage {
+  @Field()
+  chatId: number;
+
+  @Field()
+  userId: number;
+}
