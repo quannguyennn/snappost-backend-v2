@@ -7,7 +7,7 @@ import { Notification } from 'src/modules/notifications/entities/notification.en
 export class NotificationSubscriptionResolver {
   @Subscription(() => Notification, {
     filter: (payload, vars, context) => {
-      return (payload.onNewNotification.userId = vars.userId);
+      return payload.onNewNotification.userId === vars.userId;
     },
   })
   onNewNotification(@Args('userId') userId: number) {

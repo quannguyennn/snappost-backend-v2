@@ -9,7 +9,7 @@ import { UsersService } from 'src/modules/users/services/users.service';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly notiRepo: NotificationRepository) { }
+  constructor(private readonly notiRepo: NotificationRepository) {}
 
   create = async (triggerId: number, userId: number, event: EvenEnum, link: string) => {
     try {
@@ -39,7 +39,8 @@ export class NotificationService {
       });
 
       if (oldNotification) {
-        await this.notiRepo.update({ id: oldNotification.id }, { ...oldNotification });
+        const { createdAt, updatedAt, ...rest } = oldNotification;
+        await this.notiRepo.update({ id: oldNotification.id }, { ...rest });
         const updated = await this.notiRepo.findOne({ triggerId, userId, content, link, type: event, resourceId: id });
         void pubSub.publish(PubsubEventEnum.onNewNotification, { onNewNotification: updated });
         return updated;
