@@ -9,7 +9,7 @@ import { User } from 'src/modules/users/entities/users.entity';
 
 @Resolver(() => Message)
 export class MessageMutationResolver {
-  constructor(private readonly messageService: MessageService) { }
+  constructor(private readonly messageService: MessageService) {}
 
   @UseGuards(GqlCookieAuthGuard)
   @Mutation(() => Message)
@@ -18,5 +18,11 @@ export class MessageMutationResolver {
     @Args({ name: 'input', type: () => NewMessageInput }) input: NewMessageInput,
   ) {
     return await this.messageService.sendMessage(user.id, input);
+  }
+
+  @UseGuards(GqlCookieAuthGuard)
+  @Mutation(() => Boolean)
+  async setSeenMessage(@Args('chatId') chatId: number, @CurrentUser() user: User) {
+    return await this.messageService.setSeen(chatId, user.id);
   }
 }

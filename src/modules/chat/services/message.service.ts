@@ -11,27 +11,33 @@ import { ChatService } from './chat.service';
 
 @Injectable()
 export class MessageService {
-  constructor(private readonly messageRepo: MessageRepository, private readonly chatService: ChatService) { }
+  constructor(private readonly messageRepo: MessageRepository, private readonly chatService: ChatService) {}
 
   getLastMessage = async (chatId: number) => {
     try {
-      return await this.messageRepo.findOne({ where: { chatId }, order: { createdAt: "DESC" } })
+      return await this.messageRepo.findOne({ where: { chatId }, order: { createdAt: 'DESC' } });
     } catch (error) {
-      throw new ApolloError(error.message)
+      throw new ApolloError(error.message);
     }
-  }
+  };
+
+  setSeen = async (chatId: number, userId: number) => {
+    void pubSub.publish(PubsubEventEnum.onSeenMessage, { onSeenMessage: { userId, chatId } });
+    await this.messageRepo.update({ chatId, sender: Not(userId) }, { received: true });
+  };
 
   countUnseenMessageOfChat = async (userId: number, chatId: number) => {
     try {
-      return await this.messageRepo.createQueryBuilder("mess")
-        .innerJoin(Chat, "chat", "mess.chatId = chat.id")
-        .andWhere("(mess.sender != :userId AND mess.received = false)", { userId })
-        .andWhere("chat.id = :chatId", { chatId })
-        .getCount()
+      return await this.messageRepo
+        .createQueryBuilder('mess')
+        .innerJoin(Chat, 'chat', 'mess.chatId = chat.id')
+        .andWhere('(mess.sender != :userId AND mess.received = false)', { userId })
+        .andWhere('chat.id = :chatId', { chatId })
+        .getCount();
     } catch (error) {
-      throw new ApolloError(error.message)
+      throw new ApolloError(error.message);
     }
-  }
+  };
 
   getMessage = async (chatId: number, limit: number, page: number, userId: number) => {
     try {
@@ -41,10 +47,13 @@ export class MessageService {
         take: limit,
         order: { createdAt: 'DESC' },
       });
-      await this.messageRepo.update({
-        id: Not(userId)
-      }, { received: true })
-      void pubSub.publish(PubsubEventEnum.onSeenMessage, { onSeenMessage: { userId, chatId } })
+      await this.messageRepo.update(
+        {
+          id: Not(userId),
+        },
+        { received: true },
+      );
+      void pubSub.publish(PubsubEventEnum.onSeenMessage, { onSeenMessage: { userId, chatId } });
       return createPaginationObject(items, total, page, limit);
     } catch (error) {
       throw new ApolloError(error.message);
@@ -53,15 +62,18 @@ export class MessageService {
 
   sendMessage = async (senderId: number, data: DeepPartial<Message>) => {
     try {
-      const chatInfo = await this.chatService.findById(data.chatId ?? 0)
+      const chatInfo = await this.chatService.findById(data.chatId ?? 0);
       if (!chatInfo) {
-        throw new ApolloError("Chat not found")
+        throw new ApolloError('Chat not found');
       }
       const newMessage = await this.messageRepo.create({ ...data, sender: senderId, sent: true });
       const savedMessage = await this.messageRepo.save(newMessage);
       void pubSub.publish(PubsubEventEnum.onNewMessage, { onNewMessage: savedMessage });
-      const receiver = chatInfo.participants.filter(user => Number(user) !== senderId);
-      void pubSub.publish(PubsubEventEnum.onReceiveMessage, { onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id } })
+      const receiver = chatInfo.participants.filter((user) => Number(user) !== senderId);
+      void pubSub.publish(PubsubEventEnum.onReceiveMessage, {
+        onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id },
+      });
+      await this.chatService.update(data.chatId ?? 0, { lastMessage: savedMessage.id });
       return savedMessage;
     } catch (error) {
       throw new ApolloError(error.message);

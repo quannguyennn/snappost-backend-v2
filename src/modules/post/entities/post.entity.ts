@@ -1,15 +1,6 @@
-import {
-  Entity,
-  Column,
-  DeepPartial,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 import { ObjectType } from '@nestjs/graphql';
 import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
-import { snowflake } from 'src/helpers/common';
 
 @ObjectType('Post', {
   implements: [Node],
@@ -44,4 +35,4 @@ export class Post extends BaseEntity implements Node {
 }
 
 @ObjectType()
-export class PostConnection extends PaginationBase(Post) { }
+export class PostConnection extends PaginationBase(Post) {}

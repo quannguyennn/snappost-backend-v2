@@ -20,7 +20,7 @@ export class CommentService {
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
     private readonly userSerivce: UsersService,
-  ) { }
+  ) {}
 
   create = async (creatorId: number, input: DeepPartial<Comments>): Promise<Comments> => {
     const postInfo = await this.postService.findById(input.postId ?? 0);

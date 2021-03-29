@@ -14,7 +14,7 @@ export class PostService {
     private readonly postRepository: PostRepository,
     private readonly followService: FollowService,
     private readonly userService: UsersService,
-  ) { }
+  ) {}
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
@@ -48,7 +48,7 @@ export class PostService {
       .where('post.creatorId IN (:...user)', { user: [...listUserFollow, userId] })
       .limit(limit)
       .offset((page - 1) * limit)
-      .orderBy("post.actualLike", "DESC")
+      .orderBy('post.actualLike', 'DESC')
       .addOrderBy('post.createdAt', 'DESC')
       .getManyAndCount();
     return createPaginationObject(data, total, page, limit);
@@ -60,8 +60,8 @@ export class PostService {
     const [items, total] = await this.postRepository.findAndCount({
       where: blacklist.length
         ? {
-          creatorId: Not(In(blacklist)),
-        }
+            creatorId: Not(In(blacklist)),
+          }
         : {},
       skip: (page - 1) * limit,
       take: limit,
