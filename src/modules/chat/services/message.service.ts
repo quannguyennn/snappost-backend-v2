@@ -73,7 +73,7 @@ export class MessageService {
       void pubSub.publish(PubsubEventEnum.onReceiveMessage, {
         onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id },
       });
-      await this.chatService.update(data.chatId ?? 0, { lastMessage: savedMessage.id });
+      await this.chatService.update(data.chatId ?? 0, { lastMessage: savedMessage.id, isTemp: false });
       return savedMessage;
     } catch (error) {
       throw new ApolloError(error.message);
