@@ -49,7 +49,7 @@ export class MessageService {
       });
       await this.messageRepo.update(
         {
-          id: Not(userId),
+          sender: Not(userId),
         },
         { received: true },
       );
