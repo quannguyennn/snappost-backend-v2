@@ -126,4 +126,13 @@ export class UsersService {
 
     return blockUser.map((item) => item.id);
   };
+
+  getAllUser = async (limit: number, page: number): Promise<UserConnection> => {
+    const [items, total] = await this.userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return createPaginationObject(items, total, page, limit);
+  };
 }

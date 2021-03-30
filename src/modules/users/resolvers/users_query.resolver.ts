@@ -61,4 +61,9 @@ export class UsersQueryResolver {
     const userId = following.map((item) => item.followUser);
     return await this.userDataLoader.loadMany(userId);
   }
+
+  @Query(() => UserConnection)
+  async getAllUserList(@Args('limit') limit: number, @Args('page') page: number) {
+    return await this.userService.getAllUser(limit, page);
+  }
 }
