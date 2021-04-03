@@ -1,5 +1,5 @@
 import { ObjectType } from '@nestjs/graphql';
-import { Node } from 'src/graphql/types/common.interface.entity';
+import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType({
@@ -21,3 +21,6 @@ export class Report implements Node {
   @CreateDateColumn()
   createdAt: Date;
 }
+
+@ObjectType()
+export class ReportPostConnection extends PaginationBase(Report) {}

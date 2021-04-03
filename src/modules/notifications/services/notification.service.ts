@@ -32,7 +32,6 @@ export class NotificationService {
       const oldNotification = await this.notiRepo.findOne({
         triggerId,
         userId,
-        content,
         link,
         type: event,
         resourceId: id,
@@ -40,7 +39,7 @@ export class NotificationService {
 
       if (oldNotification) {
         const { createdAt, updatedAt, ...rest } = oldNotification;
-        await this.notiRepo.update({ id: oldNotification.id }, { ...rest });
+        await this.notiRepo.update({ id: oldNotification.id }, { ...rest, isSeen: false });
         const updated = await this.notiRepo.findOne({ triggerId, userId, content, link, type: event, resourceId: id });
         void pubSub.publish(PubsubEventEnum.onNewNotification, { onNewNotification: updated });
         return updated;
@@ -66,7 +65,7 @@ export class NotificationService {
   };
 
   setSeen = async (userId: number) => {
-    await this.notiRepo.update({ userId }, { isSeen: true });
+    await this.notiRepo.update({ userId }, { isSeen: true, updatedAt: () => '"updatedAt"' });
     return true;
   };
 
