@@ -9,7 +9,7 @@ import { UsersService } from 'src/modules/users/services/users.service';
 
 @Injectable()
 export class NotificationService {
-  constructor(private readonly notiRepo: NotificationRepository) {}
+  constructor(private readonly notiRepo: NotificationRepository) { }
 
   create = async (triggerId: number, userId: number, event: EvenEnum, link: string) => {
     try {
