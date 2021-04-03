@@ -10,7 +10,7 @@ import { FollowService } from 'src/modules/follow/services/follow.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) {}
+  constructor(private readonly userRepository: UserRepository, private readonly followService: FollowService) { }
 
   create = (data: DeepPartial<User>) => {
     try {
@@ -96,10 +96,12 @@ export class UsersService {
     try {
       const blockerInfo = await this.userRepository.findOne(blockerId);
       if (!blockerInfo) throw new Error('Not found');
-      blockerInfo.blocked.push(userId);
-      await this.userRepository.update({ id: blockerId }, { ...blockerInfo });
-      await this.followService.unFollowUser(userId, blockerId);
-      await this.followService.unFollowUser(blockerId, userId);
+      if (!blockerInfo.blocked.includes(userId)) {
+        blockerInfo.blocked.push(userId);
+        await this.userRepository.update({ id: blockerId }, { ...blockerInfo });
+        await this.followService.unFollowUser(userId, blockerId);
+        await this.followService.unFollowUser(blockerId, userId);
+      }
       return blockerInfo;
     } catch (error) {
       throw new Error(error.message);
