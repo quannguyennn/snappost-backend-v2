@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { ReportRepository } from 'src/modules/post/repositories/report.repository';
 import { ReportPostConnection } from '../entities/report.entity';
+import { PostService } from './post.service';
 
 @Injectable()
 export class ReportService {
-  constructor(private readonly reportRepo: ReportRepository) {}
+  constructor(private readonly reportRepo: ReportRepository, private readonly postService: PostService) {}
 
   reportPost = async (userId: number, postId: number) => {
     try {
@@ -24,5 +25,15 @@ export class ReportService {
       order: { createdAt: 'DESC' },
     });
     return createPaginationObject(items, total, page, limit);
+  };
+
+  removeReportedPost = async (reportedPostId: number): Promise<boolean> => {
+    const reportedPost = await this.reportRepo.findOne({ id: reportedPostId });
+    if (reportedPost) {
+      await this.reportRepo.delete({ id: reportedPost.id });
+      await this.postService.remove(reportedPost.postId);
+      return true;
+    }
+    return false;
   };
 }

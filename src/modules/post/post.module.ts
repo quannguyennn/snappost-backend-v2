@@ -20,6 +20,7 @@ import { PostFieldResolver } from './resolvers/post/post_field.resolver';
 import { PostMutationResolver } from './resolvers/post/post_mutation.resolver';
 import { PostQueryResolver } from './resolvers/post/post_query.resolver';
 import { ReportPostFieldResolver } from './resolvers/report/post_filed.resolver';
+import { ReportedPostMutationResolver } from './resolvers/report/report_post_mutation.resolver';
 import { ReportPostQueryResolver } from './resolvers/report/report_post_query.resolver';
 import { LikeService } from './services/like.service';
 import { PostService } from './services/post.service';
@@ -39,6 +40,7 @@ import { PostService } from './services/post.service';
     PostQueryResolver,
     PostDataloader,
     ReportPostQueryResolver,
+    ReportedPostMutationResolver,
     PostFieldResolver,
     ReportPostFieldResolver,
     LikeService,
