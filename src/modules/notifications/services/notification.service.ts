@@ -22,7 +22,7 @@ export class NotificationService {
       } else if (event === EvenEnum.follow) {
         content = `requested to follow you`;
       } else if (event === EvenEnum.acceptFollow) {
-        content = `accpeted your follow request`;
+        content = `accepted your follow request`;
       } else if (event === EvenEnum.tag) {
         content = `mentioned you in a post`;
       }

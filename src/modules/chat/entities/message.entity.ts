@@ -35,14 +35,14 @@ export class Message implements Node {
   tempId: string;
 
   @Column({ default: false })
-  received: boolean
+  received: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
 }
 
 @ObjectType()
-export class MessageConnection extends PaginationBase(Message) { }
+export class MessageConnection extends PaginationBase(Message) {}
 
 @ObjectType()
 export class SeenMessage {
@@ -60,4 +60,7 @@ export class ReceivedMessage {
 
   @Field()
   userId: number;
+
+  @Field(() => Message)
+  message: Message;
 }

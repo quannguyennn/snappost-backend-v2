@@ -71,7 +71,7 @@ export class MessageService {
       void pubSub.publish(PubsubEventEnum.onNewMessage, { onNewMessage: savedMessage });
       const receiver = chatInfo.participants.filter((user) => Number(user) !== senderId);
       void pubSub.publish(PubsubEventEnum.onReceiveMessage, {
-        onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id },
+        onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id, message: savedMessage },
       });
       await this.chatService.update(data.chatId ?? 0, { lastMessage: savedMessage.id, isTemp: false });
       return savedMessage;
