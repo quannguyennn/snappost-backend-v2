@@ -48,8 +48,8 @@ export class PostService {
       .where('post.creatorId IN (:...user)', { user: [...listUserFollow, userId] })
       .limit(limit)
       .offset((page - 1) * limit)
-      .orderBy('post.actualLike', 'DESC')
-      .addOrderBy('post.createdAt', 'DESC')
+      .orderBy('post.createdAt', 'DESC')
+      .addOrderBy('post.actualLike', 'DESC')
       .getManyAndCount();
     return createPaginationObject(data, total, page, limit);
   };
