@@ -69,7 +69,7 @@ export class MessageService {
       const newMessage = await this.messageRepo.create({ ...data, sender: senderId, sent: true });
       const savedMessage = await this.messageRepo.save(newMessage);
       void pubSub.publish(PubsubEventEnum.onNewMessage, { onNewMessage: savedMessage });
-      const receiver = chatInfo.participants.filter((user) => Number(user) !== senderId);
+      const receiver = chatInfo.participants.filter((user) => Number(user) !== Number(senderId));
       void pubSub.publish(PubsubEventEnum.onReceiveMessage, {
         onReceiveMessage: { userId: Number(receiver[0]), chatId: chatInfo.id, message: savedMessage },
       });

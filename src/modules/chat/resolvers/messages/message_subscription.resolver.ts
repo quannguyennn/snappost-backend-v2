@@ -25,6 +25,7 @@ export class MessageSubscriptionResolver {
 
   @Subscription(() => ReceivedMessage, {
     filter: (payload, vars, context) => {
+      console.log(payload.onReceiveMessage.userId, vars.userId)
       return payload.onReceiveMessage.userId === vars.userId
     }
   })
