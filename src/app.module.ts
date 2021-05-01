@@ -2,7 +2,6 @@ import { PromModule } from '@digikare/nestjs-prom';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { gqlOptions } from './graphql/gql-options';
 import { AuthModule } from './modules/auth/auth.module';
 import { MediaModule } from './modules/media/media.module';
@@ -42,7 +41,7 @@ import { CronModule } from './modules/cron/cron.module';
     CronModule
   ],
   // providers: [JSONObjectScalar],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule { }

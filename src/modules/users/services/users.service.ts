@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { DeepPartial } from 'typeorm';
 import { UserRepository } from '../repositories/users.repository';
 import { User, UserConnection } from '../entities/users.entity';
-import { errorName } from 'src/errors';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { ApolloError } from 'apollo-server';
 import { FollowService } from 'src/modules/follow/services/follow.service';
@@ -17,7 +16,7 @@ export class UsersService {
       const user = this.userRepository.create(data);
       return this.userRepository.save(user);
     } catch (error) {
-      throw new Error(errorName.SERVER_ERROR);
+      throw new Error(error.message);
     }
   };
 

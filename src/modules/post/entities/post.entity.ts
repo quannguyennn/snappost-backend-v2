@@ -27,6 +27,12 @@ export class Post extends BaseEntity implements Node {
   @Column({ default: 0 })
   actualLike: number;
 
+  @Column({ default: true })
+  isPublic: boolean;
+
+  @Column({ default: 10000 })
+  score: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -35,4 +41,4 @@ export class Post extends BaseEntity implements Node {
 }
 
 @ObjectType()
-export class PostConnection extends PaginationBase(Post) {}
+export class PostConnection extends PaginationBase(Post) { }

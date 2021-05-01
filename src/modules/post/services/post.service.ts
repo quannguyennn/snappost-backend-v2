@@ -3,8 +3,7 @@ import { createPaginationObject } from 'src/modules/common/common.repository';
 import { FollowService } from 'src/modules/follow/services/follow.service';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { DeepPartial, In, Not } from 'typeorm';
-import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
-import { Like } from '../entities/like.entity';
+import { CreatePostInput } from '../dtos/create_post.input';
 import { Post, PostConnection } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 
@@ -14,7 +13,7 @@ export class PostService {
     private readonly postRepository: PostRepository,
     private readonly followService: FollowService,
     private readonly userService: UsersService,
-  ) {}
+  ) { }
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
@@ -48,8 +47,7 @@ export class PostService {
       .where('post.creatorId IN (:...user)', { user: [...listUserFollow, userId] })
       .limit(limit)
       .offset((page - 1) * limit)
-      .orderBy('post.createdAt', 'DESC')
-      .addOrderBy('post.actualLike', 'DESC')
+      .orderBy('post.score', 'DESC')
       .getManyAndCount();
     return createPaginationObject(data, total, page, limit);
   };
@@ -60,9 +58,10 @@ export class PostService {
     const [items, total] = await this.postRepository.findAndCount({
       where: blacklist.length
         ? {
-            creatorId: Not(In(blacklist)),
-          }
-        : {},
+          creatorId: Not(In(blacklist)),
+          isPublic: true
+        }
+        : { isPublic: true },
       skip: (page - 1) * limit,
       take: limit,
       order: { createdAt: 'DESC' },
@@ -82,5 +81,13 @@ export class PostService {
 
   async pagination({ page, limit }: { page?: number; limit?: number }) {
     return this.postRepository.paginate({ page, limit });
+  }
+
+  updateScore = async ({ postId, value }: { value: number, postId?: number }) => {
+    if (postId) {
+      await this.postRepository.increment({ id: postId }, "score", value)
+    } else {
+      await this.postRepository.increment({}, "score", value)
+    }
   }
 }
