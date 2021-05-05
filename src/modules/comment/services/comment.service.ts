@@ -4,6 +4,7 @@ import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
 import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
 import { pubSub } from 'src/helpers/pubsub';
 import { createPaginationObject } from 'src/modules/common/common.repository';
+import { Constants } from 'src/modules/constant';
 import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { PostService } from 'src/modules/post/services/post.service';
 import { User } from 'src/modules/users/entities/users.entity';
@@ -20,7 +21,7 @@ export class CommentService {
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
     private readonly userSerivce: UsersService,
-  ) {}
+  ) { }
 
   create = async (creatorId: number, input: DeepPartial<Comments>): Promise<Comments> => {
     const postInfo = await this.postService.findById(input.postId ?? 0);
@@ -28,6 +29,7 @@ export class CommentService {
 
     const newComment = this.commentRepository.create({ creatorId, ...input });
     const saveComment = await this.commentRepository.save(newComment);
+    await this.postService.updateScore({ postId: input.id, value: Constants.COMMENT_SCORE })
     if (Number(creatorId) !== Number(postInfo.creatorId)) {
       await this.notificationService.create(creatorId, postInfo?.creatorId, EvenEnum.comment, `post-${postInfo?.id}`);
     }
@@ -42,6 +44,7 @@ export class CommentService {
 
   remove = async (id: number, postId: number): Promise<boolean> => {
     await this.commentRepository.delete(id);
+    await this.postService.updateScore({ postId, value: -Constants.COMMENT_SCORE })
     void pubSub.publish(PubsubEventEnum.onDeleteComment, { onDeleteComment: { id, postId } });
     return true;
   };

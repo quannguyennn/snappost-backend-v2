@@ -25,5 +25,8 @@ declare namespace NodeJS {
     readonly NAVER_DOMAIN: string;
     readonly PAYCO_DOMAIN: string;
     readonly PAYCO_CLIENT_ID: string;
+
+    readonly MUX_ACCESS_TOKEN: string;
+    readonly MUX_SECRET_KEY: string;
   }
 }

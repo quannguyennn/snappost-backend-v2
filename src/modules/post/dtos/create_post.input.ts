@@ -10,6 +10,9 @@ export class CreatePostInput {
 
   @Field({ defaultValue: "" })
   rawCaption?: string;
+
+  @Field({ defaultValue: true })
+  isPublic?: boolean;
 }
 
 @InputType()

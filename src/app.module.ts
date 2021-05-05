@@ -2,7 +2,6 @@ import { PromModule } from '@digikare/nestjs-prom';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { gqlOptions } from './graphql/gql-options';
 import { AuthModule } from './modules/auth/auth.module';
 import { MediaModule } from './modules/media/media.module';
@@ -14,6 +13,7 @@ import { FollowModule } from './modules/follow/follow.module';
 import { NotificationModule } from 'src/modules/notifications/notification.module';
 import { ChatModule } from 'src/modules/chat/chat.module';
 import { CronModule } from './modules/cron/cron.module';
+import { LiveStreamModule } from 'src/modules/livestream/livestream.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
@@ -39,10 +39,11 @@ import { CronModule } from './modules/cron/cron.module';
     FollowModule,
     NotificationModule,
     ChatModule,
-    CronModule
+    CronModule,
+    LiveStreamModule
   ],
   // providers: [JSONObjectScalar],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule { }

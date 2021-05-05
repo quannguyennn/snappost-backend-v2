@@ -3,6 +3,7 @@ import { ApolloError } from 'apollo-server-errors';
 import { EvenEnum } from 'src/graphql/enums/notification/event.enum';
 import { PubsubEventEnum } from 'src/graphql/enums/pubsub/pubsub_event.enum';
 import { pubSub } from 'src/helpers/pubsub';
+import { Constants } from 'src/modules/constant';
 import { NotificationService } from 'src/modules/notifications/services/notification.service';
 import { PostService } from 'src/modules/post/services/post.service';
 import { LikeRepository } from '../repositories/like.repository';
@@ -13,7 +14,7 @@ export class LikeService {
     private readonly likeRepository: LikeRepository,
     private readonly notificationService: NotificationService,
     private readonly postService: PostService,
-  ) {}
+  ) { }
 
   countPostLike = async (postId: number): Promise<number> => {
     return await this.likeRepository.count({ postId });
@@ -35,11 +36,11 @@ export class LikeService {
         await this.notificationService.create(userId, postInfo?.creatorId, EvenEnum.like, `post-${postInfo?.id}`);
       }
       void pubSub.publish(PubsubEventEnum.onLikePost, { onLikePost: savedReact });
-      await this.postService.update({ id: postInfo.id, actualLike: postInfo.actualLike + 1 });
+      await this.postService.updateScore({ postId: postInfo.id, value: Constants.LIKE_SCORE })
     } else {
       void pubSub.publish(PubsubEventEnum.onUnLikePost, { onUnLikePost: reaction });
       await this.likeRepository.delete(reaction.id);
-      await this.postService.update({ id: postInfo.id, actualLike: postInfo.actualLike - 1 });
+      await this.postService.updateScore({ postId: postInfo.id, value: -Constants.LIKE_SCORE })
     }
     return reaction ? false : true;
   };

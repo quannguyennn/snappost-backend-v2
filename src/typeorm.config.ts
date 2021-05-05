@@ -10,6 +10,7 @@ import { Report } from 'src/modules/post/entities/report.entity';
 import { Notification } from 'src/modules/notifications/entities/notification.entity';
 import { Chat } from 'src/modules/chat/entities/chat.entity';
 import { Message } from 'src/modules/chat/entities/message.entity';
+import { LiveStream } from 'src/modules/livestream/entities/live_stream.entity';
 
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -20,5 +21,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DATABASE_NAME,
   synchronize: process.env.DATABASE_SYNC === 'true',
   logging: process.env.DATABASE_LOGGING === 'true',
-  entities: [User, MediaEntity, AuthTokenEntity, Like, Post, Comments, Follow, Report, Notification, Chat, Message],
+  entities: [User, MediaEntity, AuthTokenEntity, Like, Post, Comments, Follow, Report, Notification, Chat, Message, LiveStream],
 };
