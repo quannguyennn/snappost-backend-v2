@@ -4,8 +4,8 @@ import { CurrentUser } from 'src/decorators/common.decorator';
 import { GqlCookieAuthGuard } from 'src/guards/gql-auth.guard';
 import { User } from 'src/modules/users/entities/users.entity';
 import { PostDataloader } from '../../dataloaders/post.dataloaders';
-import { PostArgs } from '../../dtos/post.args';
-import { Post, PostConnection } from '../../entities/post.entity';
+import { PostArgs, PostCursorFindOptions } from '../../dtos/post.args';
+import { Post, PostConnection, PostCursorConnection } from '../../entities/post.entity';
 import { PostService } from '../../services/post.service';
 
 @Resolver(() => Post)
@@ -16,6 +16,11 @@ export class PostQueryResolver {
   @Query(() => PostConnection)
   async getNewFeed(@CurrentUser() user: User, @Args() args: PostArgs): Promise<PostConnection> {
     return await this.postService.getListPost(user.id, args.page, args.limit);
+  }
+
+  @Query(() => PostCursorConnection)
+  async test(@Args({type: () => PostCursorFindOptions}) input) {
+    return await this.postService.test(input)
   }
 
   @UseGuards(GqlCookieAuthGuard)

@@ -190,20 +190,23 @@ export class CommonRepository<Model> extends Repository<Model> {
       // Include the cursor in the query to check if there is a previous page
       skip = decodedCursor.index;
     }
-    const [results, totalCount] = await this.findAndCount({ ...options, skip });
+    const [results, totalCount] = await this.findAndCount({ ...options, skip, take: findOptions.first + 1 });
     // Make sure the cursor is valid
     if (decodedCursor && findOptions.validateCursor) {
       // Make sure the ID of the first result matches the cursor ID
-      if (decodedCursor.id !== results[0][findOptions.cursorKey]) throw new InvalidCursorError();
+      if (Number(decodedCursor.id) !== Number(results[0][findOptions.cursorKey])) throw new InvalidCursorError();
     }
+
     // Convert the nodes into edges
-    const edges: Edge<Model>[] = results.map((node, i) => ({
-      node,
-      cursor: encodeCursor(node[findOptions.cursorKey], findOptions.type, i + 1 + skip),
-    }));
+    const edges: Edge<Model>[] = results.slice(1).map((node, i) => {
+      return {
+        node,
+        cursor: encodeCursor(node[findOptions.cursorKey], findOptions.type, i + skip),
+      }
+    });
 
     // Generate the page info
-    const pageInfo: PageInfo = {
+    const pageInfo: PageInfo = { 
       startCursor: edges[0] ? edges[0].cursor : null,
       endCursor: edges[edges.length - 1] ? edges[edges.length - 1].cursor : null,
       hasNextPage: results.length + skip < totalCount,

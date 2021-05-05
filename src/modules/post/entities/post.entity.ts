@@ -1,6 +1,6 @@
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 import { ObjectType } from '@nestjs/graphql';
-import { Node, PaginationBase } from 'src/graphql/types/common.interface.entity';
+import { Node, PaginationBase, PaginationCursor } from 'src/graphql/types/common.interface.entity';
 
 @ObjectType('Post', {
   implements: [Node],
@@ -36,3 +36,6 @@ export class Post extends BaseEntity implements Node {
 
 @ObjectType()
 export class PostConnection extends PaginationBase(Post) {}
+
+@ObjectType()
+export class PostCursorConnection extends PaginationCursor(Post){}

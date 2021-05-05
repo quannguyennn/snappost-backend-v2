@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createPaginationObject } from 'src/modules/common/common.repository';
 import { FollowService } from 'src/modules/follow/services/follow.service';
+import { PostCursorFindOptions } from 'src/modules/post/dtos/post.args';
 import { UsersService } from 'src/modules/users/services/users.service';
 import { DeepPartial, In, Not } from 'typeorm';
 import { CreatePostInput, UpdatePostInput } from '../dtos/create_post.input';
@@ -15,6 +16,15 @@ export class PostService {
     private readonly followService: FollowService,
     private readonly userService: UsersService,
   ) {}
+
+  test = async (input: PostCursorFindOptions) => {
+    const a = await this.postRepository.paginateCursor({
+      order: {
+        createdAt : "DESC"
+      }
+    }, input)
+    return a;
+  }
 
   find = async (): Promise<Post[]> => {
     return await this.postRepository.find();
