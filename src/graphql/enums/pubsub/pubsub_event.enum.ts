@@ -7,8 +7,11 @@ export enum PubsubEventEnum {
   onUnLikePost = 'onUnLikePost',
   onNewNotification = 'onNewNotification',
   onNewMessage = 'onNewMessage',
-  onSeenMessage = "onSeenMessage",
-  onReceiveMessage = "onReceiveMessage"
+  onSeenMessage = 'onSeenMessage',
+  onReceiveMessage = 'onReceiveMessage',
+  onJoinStream = 'onJoinStream',
+  onLeaveStream = 'onLeaveStream',
+  onNewStreamChat = 'onNewStreamChat',
 }
 
 registerEnumType(PubsubEventEnum, {

@@ -6,8 +6,10 @@ import { LiveStreamRepository } from 'src/modules/livestream/repositories/live_s
 import { LiveStreamFieldResolver } from 'src/modules/livestream/resolvers/live_stream_field.resolver';
 import { LiveStreamMutationResolver } from 'src/modules/livestream/resolvers/live_stream_mutation_resolver';
 import { LiveStreamQueryResolver } from 'src/modules/livestream/resolvers/live_stream_query.resolver';
+import { LiveStreamSubscriptionResolver } from 'src/modules/livestream/resolvers/live_stream_subscription.resolver';
 import { LiveStreamService } from 'src/modules/livestream/services/live_stream.service';
 import { MuxService } from 'src/modules/livestream/services/mux.service';
+import { MediaModule } from 'src/modules/media/media.module';
 import { UsersModule } from 'src/modules/users/users.module';
 
 @Module({
@@ -15,6 +17,7 @@ import { UsersModule } from 'src/modules/users/users.module';
     TypeOrmModule.forFeature([LiveStream, LiveStreamRepository]),
     forwardRef(() => FollowModule),
     forwardRef(() => UsersModule),
+    forwardRef(() => MediaModule),
   ],
   exports: [LiveStreamService],
   providers: [
@@ -23,6 +26,7 @@ import { UsersModule } from 'src/modules/users/users.module';
     MuxService,
     LiveStreamQueryResolver,
     LiveStreamFieldResolver,
+    LiveStreamSubscriptionResolver,
   ],
 })
 export class LiveStreamModule {}
