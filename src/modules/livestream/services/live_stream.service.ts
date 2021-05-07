@@ -114,8 +114,8 @@ export class LiveStreamService {
     const userInfo = await this.userService.findById(userId);
     const avatar = await this.mediaService.findById(userInfo?.avatar ?? 0);
     if (!userInfo) throw new Error('user not found');
-    pubSub.publish(PubsubEventEnum.onLeaveStream, {
-      onLeaveStream: {
+    pubSub.publish(PubsubEventEnum.onNewStreamChat, {
+      onNewStreamChat: {
         id: streamId,
         userId: userInfo.id ?? 0,
         name: userInfo.name ?? '',
